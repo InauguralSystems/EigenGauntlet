@@ -6,6 +6,6 @@ EIGS="${EIGENSCRIPT_BIN:-/home/jon/EigenScript/src/eigenscript}"
 SIZE="${1:-1}"
 
 cd "$ROOT"
-for suite in tensor dataflow swarm concurrent parser memory observer io realtime; do
+for suite in tensor dataflow swarm concurrent parser memory observer io realtime module-scope; do
     "$EIGS" gauntlet.eigs --suite "$suite" --size "$SIZE"
 done
