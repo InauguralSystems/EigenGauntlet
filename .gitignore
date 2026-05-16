@@ -1,0 +1,16 @@
+# Generated data
+tmp/
+*.log
+*.tmp
+*.db
+
+# EigenScript outputs
+models/
+checkpoint/
+
+# Editor and OS files
+.DS_Store
+*.swp
+*.swo
+*~
+

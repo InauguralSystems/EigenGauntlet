@@ -1,0 +1,44 @@
+# ============================================================
+# Concurrent workload — spawn, channel, try_recv
+# ============================================================
+
+define _worker(data) as:
+    ch is data.channel
+    start is data.start
+    count is data.count
+    total is 0
+    for i in range of count:
+        total is total + start + i
+    send of [ch, {"id": data.id, "total": total}]
+    return null
+
+define concurrent_run(size) as:
+    ch is channel of null
+    workers is 2
+    if size > 1:
+        workers is 3
+    handles is []
+    for i in range of workers:
+        data is {"id": i, "start": i * 10, "count": 12 * size, "channel": ch}
+        append of [handles, spawn of [_worker, data]]
+
+    received is 0
+    checksum is 0
+    spins is 0
+    loop while received < workers and spins < 2000:
+        msg is try_recv of ch
+        if msg != null:
+            checksum is checksum + msg.total
+            received is received + 1
+        else:
+            usleep of 1000
+            spins is spins + 1
+
+    for h in handles:
+        thread_join of h
+
+    close_channel of ch
+    assert_eq of ["all worker results", received, workers]
+    assert_true of ["checksum positive", checksum > 0]
+    return f"workers={workers} checksum={checksum}"
+

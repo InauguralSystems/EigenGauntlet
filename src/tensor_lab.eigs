@@ -1,0 +1,50 @@
+# ============================================================
+# Tensor workload — batched neural-layer math
+# ============================================================
+
+define _make_batch(rows, cols) as:
+    batch is []
+    for r in range of rows:
+        row is []
+        for c in range of cols:
+            append of [row, ((r + 1) * (c + 2)) / 10.0]
+        append of [batch, row]
+    return batch
+
+define _make_weights(rows, cols) as:
+    w is []
+    for r in range of rows:
+        row is []
+        for c in range of cols:
+            sign is 1.0
+            if ((r + c) % 2) == 1:
+                sign is -1.0
+            append of [row, sign * ((r + 1) + (c + 1)) / 100.0]
+        append of [w, row]
+    return w
+
+define tensor_lab_run(size) as:
+    batch_size is 2 + size
+    input_dim is 6
+    hidden_dim is 4
+    out_dim is 3
+
+    x is _make_batch of [batch_size, input_dim]
+    w1 is _make_weights of [input_dim, hidden_dim]
+    b1 is [0.1, -0.1, 0.05, -0.05]
+    w2 is _make_weights of [hidden_dim, out_dim]
+    b2 is [0.01, -0.02, 0.03]
+
+    h is relu of (add of [(matmul of [x, w1]), b1])
+    logits is add of [(matmul of [h, w2]), b2]
+    probs is softmax of logits
+
+    assert_eq of ["tensor rows", len of probs, batch_size]
+    assert_eq of ["tensor cols", len of probs[0], out_dim]
+
+    row_sum is sum_list of probs[0]
+    assert_true of ["softmax normalized", row_sum > 0.99 and row_sum < 1.01]
+    assert_true of ["bias broadcast", logits[0][0] != logits[1][0]]
+
+    return f"rows={batch_size} cols={out_dim}"
+

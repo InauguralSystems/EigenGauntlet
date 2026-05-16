@@ -1,0 +1,22 @@
+# ============================================================
+# Shared helpers
+# ============================================================
+
+define assert_eq(label, actual, expected) as:
+    if actual != expected:
+        print of f"ASSERT {label}: got {actual}, expected {expected}"
+        assert of [0, label]
+    return 1
+
+define assert_true(label, cond) as:
+    if not cond:
+        print of f"ASSERT {label}: condition was false"
+        assert of [0, label]
+    return 1
+
+define sum_list(items) as:
+    total is 0.0
+    for item in items:
+        total is total + item
+    return total
+

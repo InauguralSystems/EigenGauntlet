@@ -1,0 +1,61 @@
+# ============================================================
+# EigenGauntlet — EigenScript stress workload runner
+# ============================================================
+
+load_file of "src/common.eigs"
+load_file of "src/tensor_lab.eigs"
+load_file of "src/dataflow.eigs"
+load_file of "src/swarm.eigs"
+load_file of "src/concurrent_lab.eigs"
+
+define parse_args() as:
+    argv is args of null
+    cfg is {"suite": "smoke", "size": 1}
+    i is 0
+    loop while i < (len of argv):
+        if argv[i] == "--suite":
+            if i + 1 < (len of argv):
+                i is i + 1
+                cfg.suite is argv[i]
+        elif argv[i] == "--size":
+            if i + 1 < (len of argv):
+                i is i + 1
+                cfg.size is floor of (num of argv[i])
+                if cfg.size < 1:
+                    cfg.size is 1
+        i is i + 1
+    return cfg
+
+define timed_run(name, fn, size) as:
+    t0 is monotonic_ns of null
+    result is fn of size
+    t1 is monotonic_ns of null
+    ms is (t1 - t0) / 1000000
+    print of f"{name}: ok ({ms}ms) -> {result}"
+    return result
+
+cfg is parse_args of null
+suite is cfg.suite
+size is cfg.size
+
+print of f"EigenGauntlet suite={suite} size={size}"
+
+if suite == "tensor":
+    timed_run of ["tensor", tensor_lab_run, size]
+elif suite == "dataflow":
+    timed_run of ["dataflow", dataflow_run, size]
+elif suite == "swarm":
+    timed_run of ["swarm", swarm_run, size]
+elif suite == "concurrent":
+    timed_run of ["concurrent", concurrent_run, size]
+elif suite == "smoke":
+    timed_run of ["tensor", tensor_lab_run, size]
+    timed_run of ["dataflow", dataflow_run, size]
+    timed_run of ["swarm", swarm_run, size]
+    timed_run of ["concurrent", concurrent_run, size]
+else:
+    print of f"Unknown suite: {suite}"
+    assert of [0, "unknown suite"]
+
+print of "EigenGauntlet complete"
+

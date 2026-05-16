@@ -1,0 +1,46 @@
+# ============================================================
+# Swarm workload — entity simulation and spatial queries
+# ============================================================
+
+define _make_entity(id, x, y) as:
+    return {
+        "id": id,
+        "active": 1,
+        "px": x,
+        "py": y,
+        "vx": 0.0,
+        "vy": 0.0
+    }
+
+define _make_swarm(count, world_w, world_h) as:
+    entities is []
+    for i in range of count:
+        x is ((i * 37) % floor of world_w) + 0.5
+        y is ((i * 19) % floor of world_h) + 0.5
+        append of [entities, _make_entity of [i, x, y]]
+    return entities
+
+define swarm_run(size) as:
+    count is 12 * size
+    steps is 10 * size
+    world_w is 80.0
+    world_h is 40.0
+    entities is _make_swarm of [count, world_w, world_h]
+
+    for step in range of steps:
+        for i in range of (len of entities):
+            e is entities[i]
+            n is nearest_in_range of [entities, e.px, e.py, 12.0, world_w, world_h]
+            if n != null:
+                target is entities[n.index]
+                dx is target.px - e.px
+                dy is target.py - e.py
+                e.vx is e.vx + dx * 0.001
+                e.vy is e.vy + dy * 0.001
+            e.px is (e.px + e.vx + world_w) % world_w
+            e.py is (e.py + e.vy + world_h) % world_h
+
+    assert_eq of ["swarm count stable", len of entities, count]
+    assert_true of ["swarm x bounded", entities[0].px >= 0 and entities[0].px < world_w]
+    return f"entities={count} steps={steps}"
+

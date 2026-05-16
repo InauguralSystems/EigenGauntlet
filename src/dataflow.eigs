@@ -1,0 +1,45 @@
+# ============================================================
+# Dataflow workload — JSON, strings, dicts, file I/O, EigenStore
+# ============================================================
+
+define _make_records(count) as:
+    records is []
+    for i in range of count:
+        rec is {
+            "id": i,
+            "name": f"sample-{i}",
+            "score": (i * i + 3) % 17,
+            "active": i % 2
+        }
+        append of [records, rec]
+    return records
+
+define dataflow_run(size) as:
+    count is 8 * size
+    records is _make_records of count
+
+    encoded is json_encode of records
+    decoded is json_decode of encoded
+    assert_eq of ["json record count", len of decoded, count]
+    assert_eq of ["json nested field", decoded[3].name, "sample-3"]
+
+    mkdir of "tmp"
+    path is "tmp/dataflow.json"
+    write_ok is write_text of [path, encoded]
+    assert_eq of ["write json", write_ok, 1]
+    loaded is read_text of path
+    assert_true of ["read json", len of loaded > 10]
+
+    store_path is "tmp/dataflow.db"
+    rm of store_path
+    db is store_open of store_path
+    for rec in records:
+        store_put of [db, "records", rec]
+    stored_count is store_count of [db, "records"]
+    assert_eq of ["store count", stored_count, count]
+    store_close of db
+
+    rm of path
+    rm of store_path
+    return f"records={count}"
+
