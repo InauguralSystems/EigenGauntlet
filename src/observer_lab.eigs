@@ -1,0 +1,66 @@
+# ============================================================
+# Observer workload — interrogatives, predicates, report states
+# ============================================================
+
+define observer_lab_run(size) as:
+    # Diverging: entropy increases from low to higher.
+    x is 1000000
+    x is 0.5
+    x_pred is diverging
+    x_report is report of x
+    assert_eq of ["observer diverging report", x_report, "diverging"]
+    assert_eq of ["observer diverging predicate", x_pred, 1]
+
+    # Improving: entropy decreases after priming.
+    y is 0.5
+    y is 0.5
+    y is 1000000
+    y_pred is improving
+    y_report is report of y
+    assert_eq of ["observer improving report", y_report, "improving"]
+    assert_eq of ["observer improving predicate", y_pred, 1]
+
+    # Converged and equilibrium states from known stable trajectories.
+    z is 1000000
+    z is 1000000
+    z_pred is converged
+    z_report is report of z
+    assert_eq of ["observer converged report", z_report, "converged"]
+    assert_eq of ["observer converged predicate", z_pred, 1]
+
+    v is 42
+    v is 42
+    v_pred is equilibrium
+    v_report is report of v
+    assert_eq of ["observer equilibrium report", v_report, "equilibrium"]
+    assert_eq of ["observer equilibrium predicate", v_pred, 1]
+
+    # Oscillation: dH sign flip.
+    w is 1000000
+    w is 0.5
+    w is 1000000
+    w_pred is oscillating
+    w_report is report of w
+    assert_eq of ["observer oscillating report", w_report, "oscillating"]
+    assert_eq of ["observer oscillating predicate", w_pred, 1]
+
+    snap is observe of w
+    w_name is who is w
+    w_entropy is where is w
+    assert_eq of ["observe tuple length", len of snap, 4]
+    assert_eq of ["who name", w_name, "w"]
+    assert_true of ["where nonnegative", w_entropy >= 0]
+
+    hot is 1
+    age_before is when is hot
+    iterations is 20 * size
+    unobserved:
+        for i in range of iterations:
+            hot is hot + i
+    age_after is when is hot
+    assert_eq of ["unobserved age unchanged", age_after, age_before]
+
+    thresholds is get_observer_thresholds of null
+    assert_eq of ["threshold tuple length", len of thresholds, 3]
+
+    return f"age={age_after} hot={hot}"

@@ -34,6 +34,9 @@ eigenscript gauntlet.eigs --suite smoke
 - `concurrent` - threads, channels, non-blocking receive
 - `parser` - `try_parse`, `eval`, generated source, functions, match, f-strings
 - `memory` - list/dict/tensor churn, closures, arena mark/reset
+- `observer` - interrogatives, predicates, report states, unobserved blocks
+- `io` - stream tensor I/O, buffers, byte reads, tensor save/load
+- `realtime` - frame-budget style fixed-step loop with monotonic timing
 
 ## Hardware Discipline
 
