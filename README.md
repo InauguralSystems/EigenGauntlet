@@ -37,6 +37,7 @@ eigenscript gauntlet.eigs --suite smoke
 - `observer` - interrogatives, predicates, report states, unobserved blocks
 - `io` - stream tensor I/O, buffers, byte reads, tensor save/load
 - `realtime` - frame-budget style fixed-step loop with monotonic timing
+- `module-scope` - `eval`, `load_file`, import isolation, module closures
 
 ## Hardware Discipline
 

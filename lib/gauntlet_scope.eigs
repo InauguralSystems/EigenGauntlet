@@ -1,0 +1,22 @@
+# Import fixture for module/scope stress.
+
+scope_counter is 0
+_private_secret is 99
+
+define bump() as:
+    scope_counter is scope_counter + 1
+    return scope_counter
+
+define get_counter() as:
+    return scope_counter
+
+define make_counter(start) as:
+    count is start
+    define next() as:
+        count is count + 1
+        return count
+    return next
+
+define eval_local() as:
+    eval of "module_eval_tmp is 40\nmodule_eval_tmp is module_eval_tmp + 2"
+    return module_eval_tmp

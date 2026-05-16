@@ -1,0 +1,62 @@
+# ============================================================
+# Module/scope workload — eval, load_file, import, closures
+# ============================================================
+
+define _expect_undefined(label, name) as:
+    caught is 0
+    try:
+        eval of name
+    catch err:
+        caught is 1
+    assert_eq of [label, caught, 1]
+    return caught
+
+define _local_eval_probe() as:
+    eval of "module_scope_tmp is 41\nmodule_scope_tmp is module_scope_tmp + 1"
+    return module_scope_tmp
+
+define module_scope_lab_run(size) as:
+    eval of "module_scope_global is 7"
+    assert_eq of ["top-level eval exports", module_scope_global, 7]
+
+    local_eval_value is _local_eval_probe of null
+    assert_eq of ["function eval sees caller scope", local_eval_value, 42]
+    _expect_undefined of ["function eval does not leak", "module_scope_tmp"]
+
+    load_file of "fixtures/load_scope_fixture.eigs"
+    assert_eq of ["load_file exposes label", load_scope_get_label of null, "fixture-loaded"]
+    assert_eq of ["load_file first bump", load_scope_bump of null, 1]
+    assert_eq of ["load_file second bump", load_scope_bump of null, 2]
+
+    loaded_a is make_loaded_counter of 10
+    loaded_b is make_loaded_counter of 20
+    assert_eq of ["loaded closure a1", loaded_a of null, 11]
+    assert_eq of ["loaded closure a2", loaded_a of null, 12]
+    assert_eq of ["loaded closure b1", loaded_b of null, 21]
+
+    load_file of "fixtures/load_scope_fixture.eigs"
+    assert_eq of ["load_file reload resets fixture", load_scope_bump of null, 1]
+
+    import gauntlet_scope
+    assert_eq of ["import returns dict", type of gauntlet_scope, "dict"]
+    assert_eq of ["import bump 1", gauntlet_scope.bump of null, 1]
+    assert_eq of ["import bump 2", gauntlet_scope.bump of null, 2]
+    assert_eq of ["import state visible to getter", gauntlet_scope.get_counter of null, 2]
+    assert_eq of ["import private filtered", has_key of [gauntlet_scope, "_private_secret"], 0]
+    _expect_undefined of ["import does not leak state", "scope_counter"]
+
+    module_counter_fn is gauntlet_scope.make_counter of 30
+    assert_eq of ["import closure next 1", module_counter_fn of null, 31]
+    assert_eq of ["import closure next 2", module_counter_fn of null, 32]
+
+    assert_eq of ["import eval caller scope", gauntlet_scope.eval_local of null, 42]
+    _expect_undefined of ["import eval local hidden", "module_eval_tmp"]
+
+    import gauntlet_scope
+    assert_eq of ["repeat import fresh state", gauntlet_scope.get_counter of null, 0]
+
+    for i in range of (3 * size):
+        c is gauntlet_scope.make_counter of i
+        assert_eq of ["factory closure step", c of null, i + 1]
+
+    return f"size={size} global={module_scope_global}"
