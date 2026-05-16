@@ -1,0 +1,66 @@
+# ============================================================
+# Memory workload — churn, closures, arena mark/reset
+# ============================================================
+
+define _make_adder(base) as:
+    define inner(x) as:
+        return x + base
+    return inner
+
+define _churn_dicts(rounds, width) as:
+    total is 0
+    for r in range of rounds:
+        row is {}
+        for c in range of width:
+            key is f"k{c}"
+            dict_set of [row, key, r + c]
+        total is total + row.k0
+        if width > 3:
+            total is total + row.k3
+    return total
+
+define _churn_lists(rounds, width) as:
+    total is 0
+    for r in range of rounds:
+        items is []
+        for c in range of width:
+            append of [items, r * width + c]
+        total is total + len of items
+        total is total + items[0]
+    return total
+
+define _arena_tensor_churn(rounds, width) as:
+    total is 0.0
+    for r in range of rounds:
+        arena_mark of null
+        a is []
+        b is []
+        for i in range of width:
+            append of [a, i + r]
+            append of [b, width - i]
+        c is multiply of [a, b]
+        total is total + sum of c
+        arena_reset of null
+    return total
+
+define memory_lab_run(size) as:
+    rounds is 8 * size
+    width is 8
+
+    list_total is _churn_lists of [rounds, width]
+    dict_total is _churn_dicts of [rounds, width]
+    tensor_total is _arena_tensor_churn of [rounds, width]
+
+    add7 is _make_adder of 7
+    add11 is _make_adder of 11
+    assert_eq of ["closure add7", add7 of 5, 12]
+    assert_eq of ["closure add11", add11 of 5, 16]
+
+    stats is arena_stats of null
+    assert_true of ["list churn positive", list_total > 0]
+    assert_true of ["dict churn positive", dict_total > 0]
+    assert_true of ["tensor churn positive", tensor_total > 0]
+    assert_eq of ["arena stats type", type of stats, "num"]
+    assert_true of ["arena stats non-negative", stats >= 0]
+
+    return f"rounds={rounds} width={width}"

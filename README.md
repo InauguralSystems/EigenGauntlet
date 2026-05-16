@@ -32,6 +32,8 @@ eigenscript gauntlet.eigs --suite smoke
 - `dataflow` - JSON, strings, dictionaries, file I/O, EigenStore
 - `swarm` - real-time style entity simulation and spatial queries
 - `concurrent` - threads, channels, non-blocking receive
+- `parser` - `try_parse`, `eval`, generated source, functions, match, f-strings
+- `memory` - list/dict/tensor churn, closures, arena mark/reset
 
 ## Hardware Discipline
 
@@ -45,10 +47,12 @@ be opt-in and named clearly.
 # Run all smoke workloads
 ./tests/run_smoke.sh
 
+# Run each workload separately with timings
+./tests/run_each.sh
+
 # Run one workload
 /home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite tensor
 
 # Run a bigger local pass
 /home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite smoke --size 3
 ```
-

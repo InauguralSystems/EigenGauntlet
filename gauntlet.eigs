@@ -7,6 +7,8 @@ load_file of "src/tensor_lab.eigs"
 load_file of "src/dataflow.eigs"
 load_file of "src/swarm.eigs"
 load_file of "src/concurrent_lab.eigs"
+load_file of "src/parser_lab.eigs"
+load_file of "src/memory_lab.eigs"
 
 define parse_args() as:
     argv is args of null
@@ -48,14 +50,19 @@ elif suite == "swarm":
     timed_run of ["swarm", swarm_run, size]
 elif suite == "concurrent":
     timed_run of ["concurrent", concurrent_run, size]
+elif suite == "parser":
+    timed_run of ["parser", parser_lab_run, size]
+elif suite == "memory":
+    timed_run of ["memory", memory_lab_run, size]
 elif suite == "smoke":
     timed_run of ["tensor", tensor_lab_run, size]
     timed_run of ["dataflow", dataflow_run, size]
     timed_run of ["swarm", swarm_run, size]
     timed_run of ["concurrent", concurrent_run, size]
+    timed_run of ["parser", parser_lab_run, size]
+    timed_run of ["memory", memory_lab_run, size]
 else:
     print of f"Unknown suite: {suite}"
     assert of [0, "unknown suite"]
 
 print of "EigenGauntlet complete"
-

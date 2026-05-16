@@ -1,0 +1,54 @@
+# ============================================================
+# Parser workload — generated source, try_parse, eval
+# ============================================================
+
+define _require_parse(label, source) as:
+    ok is try_parse of source
+    assert_eq of [label, ok, 1]
+    return ok
+
+define _require_reject(label, source) as:
+    ok is try_parse of source
+    assert_eq of [label, ok, 0]
+    return ok
+
+define parser_lab_run(size) as:
+    # A compact language cross-section.
+    src_fn is "define inc(n) as:\n    return n + 1\ninc of 41\n"
+    _require_parse of ["parse function", src_fn]
+    assert_eq of ["eval function", eval of src_fn, 42]
+
+    src_match is "x is 2\nmatch x:\n    case 1:\n        y is 10\n    case 2:\n        y is 20\n    case _:\n        y is 30\ny\n"
+    _require_parse of ["parse match", src_match]
+    assert_eq of ["eval match", eval of src_match, 20]
+
+    src_lambda is "double is (x) => x * 2\ndouble of 21\n"
+    _require_parse of ["parse lambda", src_lambda]
+    assert_eq of ["eval lambda", eval of src_lambda, 42]
+
+    src_fstr is "name is \"Eigen\"\nf\"{name}Script\"\n"
+    _require_parse of ["parse fstring", src_fstr]
+    assert_eq of ["eval fstring", eval of src_fstr, "EigenScript"]
+
+    src_collection is "items is [x * 3 for x in [1, 2, 3, 4] if x > 1]\nitems[2]\n"
+    _require_parse of ["parse listcomp", src_collection]
+    assert_eq of ["eval listcomp", eval of src_collection, 12]
+
+    _require_reject of ["reject missing colon", "if x > 0\n    y is 1\n"]
+    _require_reject of ["reject bad bracket", "x is [1, 2\n"]
+
+    # Generated source stresses tokenizer/parser allocation and eval state.
+    generated is "acc is 0\n"
+    expected is 0
+    count is 12 * size
+    for i in range of count:
+        generated is f"{generated}acc is acc + {i}\n"
+        expected is expected + i
+    generated is f"{generated}acc\n"
+
+    _require_parse of ["parse generated", generated]
+    got is eval of generated
+    assert_eq of ["eval generated sum", got, expected]
+
+    return f"generated_lines={count + 2}"
+
