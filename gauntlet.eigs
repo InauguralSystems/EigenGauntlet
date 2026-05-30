@@ -6,6 +6,7 @@ load_file of "src/common.eigs"
 load_file of "src/tensor_lab.eigs"
 load_file of "src/dataflow.eigs"
 load_file of "src/swarm.eigs"
+load_file of "src/swarm_batch.eigs"
 load_file of "src/concurrent_lab.eigs"
 load_file of "src/parser_lab.eigs"
 load_file of "src/memory_lab.eigs"
@@ -52,6 +53,8 @@ elif suite == "dataflow":
     timed_run of ["dataflow", dataflow_run, size]
 elif suite == "swarm":
     timed_run of ["swarm", swarm_run, size]
+elif suite == "swarm-batch" or suite == "swarm_batch":
+    timed_run of ["swarm-batch", swarm_batch_run, size]
 elif suite == "concurrent":
     timed_run of ["concurrent", concurrent_run, size]
 elif suite == "parser":
@@ -70,6 +73,7 @@ elif suite == "smoke":
     timed_run of ["tensor", tensor_lab_run, size]
     timed_run of ["dataflow", dataflow_run, size]
     timed_run of ["swarm", swarm_run, size]
+    timed_run of ["swarm-batch", swarm_batch_run, size]
     timed_run of ["concurrent", concurrent_run, size]
     timed_run of ["parser", parser_lab_run, size]
     timed_run of ["memory", memory_lab_run, size]
