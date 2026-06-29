@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-EIGS="${EIGENSCRIPT_BIN:-/home/jon/EigenScript/src/eigenscript}"
+EIGS="${EIGENSCRIPT_BIN:-eigenscript}"
 
 cd "$ROOT"
 "$EIGS" gauntlet.eigs --suite smoke --size "${1:-1}"

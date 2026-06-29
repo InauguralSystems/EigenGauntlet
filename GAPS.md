@@ -5,7 +5,16 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
 
 ## Open
 
-None yet.
+- 2026-06-29: `concurrent` lab — a dict sent across a channel from a spawned
+  thread arrives with its entry **count** intact but its string **keys
+  corrupted** (garbage bytes), so `msg.total` reads null → `cannot apply '+' to
+  num and null` at `concurrent_lab.eigs:31`. Cross-thread channel transfer
+  doesn't deep-copy the dict's heap key strings (use-after-free on the sender
+  thread's freed string memory); same-thread send/recv is fine. Minimal repro:
+  worker `send of [ch, {"id": 7, "total": 42}]` → main `try_recv` yields
+  `keys=["<garbage>","<garbage>"] len=2`. Filed upstream as EigenScript #293;
+  to fix at the root (deep-copy/intern dict key+string contents on cross-thread
+  channel transfer), not worked around here.
 
 ## Resolved
 
