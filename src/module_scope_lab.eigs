@@ -52,8 +52,11 @@ define module_scope_lab_run(size) as:
     assert_eq of ["import eval caller scope", gauntlet_scope.eval_local of null, 42]
     _expect_undefined of ["import eval local hidden", "module_eval_tmp"]
 
+    # Re-import hits the module cache: the body runs once per program (SPEC.md),
+    # so the same instance comes back with state intact (counter still 2), NOT a
+    # fresh module. (Was asserting fresh state=0 — a pre-cache expectation.)
     import gauntlet_scope
-    assert_eq of ["repeat import fresh state", gauntlet_scope.get_counter of null, 0]
+    assert_eq of ["repeat import returns cached state", gauntlet_scope.get_counter of null, 2]
 
     for i in range of (3 * size):
         c is gauntlet_scope.make_counter of i

@@ -3,24 +3,44 @@
 # ============================================================
 
 define observer_lab_run(size) as:
-    # Diverging: entropy increases from low to higher.
+    # Predicates are WINDOWED (#200-#209): they read a trajectory of dH frames,
+    # not a single step. diverging/improving need count>=3 with a directional
+    # entropy ramp; converged/equilibrium need a full window (OBSERVER_WINDOW_N
+    # samples) at rest; oscillating needs >=4 dH sign flips. A 2-3 point
+    # trajectory now correctly reads "stable", so each case feeds a real window.
+
+    # Diverging: entropy rises over a descent in value (count>=3).
     x is 1000000
-    x is 0.5
+    x is 1000
+    x is 100
+    x is 10
+    x is 2
     x_pred is diverging
     x_report is report of x
     assert_eq of ["observer diverging report", x_report, "diverging"]
     assert_eq of ["observer diverging predicate", x_pred, 1]
 
-    # Improving: entropy decreases after priming.
+    # Improving: entropy falls over an ascent in value (count>=3).
     y is 0.5
-    y is 0.5
+    y is 1.0
+    y is 5.0
+    y is 100.0
     y is 1000000
     y_pred is improving
     y_report is report of y
     assert_eq of ["observer improving report", y_report, "improving"]
     assert_eq of ["observer improving predicate", y_pred, 1]
 
-    # Converged and equilibrium states from known stable trajectories.
+    # Converged: full dH window at rest in a low-entropy basin.
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
+    z is 1000000
     z is 1000000
     z is 1000000
     z_pred is converged
@@ -28,6 +48,16 @@ define observer_lab_run(size) as:
     assert_eq of ["observer converged report", z_report, "converged"]
     assert_eq of ["observer converged predicate", z_pred, 1]
 
+    # Equilibrium: full dH window at rest at a moderate entropy level.
+    v is 42
+    v is 42
+    v is 42
+    v is 42
+    v is 42
+    v is 42
+    v is 42
+    v is 42
+    v is 42
     v is 42
     v is 42
     v_pred is equilibrium
@@ -35,7 +65,11 @@ define observer_lab_run(size) as:
     assert_eq of ["observer equilibrium report", v_report, "equilibrium"]
     assert_eq of ["observer equilibrium predicate", v_pred, 1]
 
-    # Oscillation: dH sign flip.
+    # Oscillation: alternating value -> >=4 dH sign flips across the window.
+    w is 1000000
+    w is 0.5
+    w is 1000000
+    w is 0.5
     w is 1000000
     w is 0.5
     w is 1000000
