@@ -2,7 +2,7 @@
 
 Machine: 2007 Gateway laptop, dual Pentium class hardware.
 
-EigenScript binary: `/home/jon/EigenScript/src/eigenscript`
+EigenScript binary: `../EigenScript/src/eigenscript`
 
 Date captured: 2026-05-16 local development state after adding observer, I/O,
 realtime, and module/scope workloads.

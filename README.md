@@ -1,5 +1,10 @@
 # EigenGauntlet
 
+[![CI](https://github.com/InauguralSystems/EigenGauntlet/actions/workflows/ci.yml/badge.svg)](https://github.com/InauguralSystems/EigenGauntlet/actions/workflows/ci.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/InauguralSystems/EigenGauntlet/badge)](https://securityscorecards.dev/viewer/?uri=github.com/InauguralSystems/EigenGauntlet)
+[![tag](https://img.shields.io/github/v/tag/InauguralSystems/EigenGauntlet?label=version)](https://github.com/InauguralSystems/EigenGauntlet/tags)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 EigenGauntlet is an EigenScript stress application suite for constrained
 hardware. It is intentionally built as a set of small real workloads rather
 than synthetic microbenchmarks.
@@ -17,7 +22,7 @@ fixed at the root.
 Use the local development binary directly:
 
 ```bash
-/home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite smoke
+../EigenScript/src/eigenscript gauntlet.eigs --suite smoke
 ```
 
 Or use an installed binary:
@@ -55,8 +60,8 @@ be opt-in and named clearly.
 ./tests/run_each.sh
 
 # Run one workload
-/home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite tensor
+../EigenScript/src/eigenscript gauntlet.eigs --suite tensor
 
 # Run a bigger local pass
-/home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite smoke --size 3
+../EigenScript/src/eigenscript gauntlet.eigs --suite smoke --size 3
 ```
