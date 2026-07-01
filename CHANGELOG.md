@@ -1,6 +1,6 @@
 # Changelog
 
-## [Initial Release]
+## [0.1.0] — 2026-07-01
 
 ### Workloads (10)
 - **tensor**: batched neural-layer math (matmul, relu, softmax)
