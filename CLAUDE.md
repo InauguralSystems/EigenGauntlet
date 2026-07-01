@@ -30,8 +30,8 @@ eigenscript gauntlet.eigs --suite smoke
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
-Minimum language version for current workloads is **v0.13.0**;
-**v0.14.2** is the current tested release.
+CI builds and tests against EigenScript **v0.22.0**, pinned in
+`.github/workflows/ci.yml`.
 
 ## Run / test
 
@@ -110,7 +110,7 @@ ship the smaller default and document the larger mode.
 10 workloads, smoke green at default size. Latest addition:
 `swarm-batch` lab exercising `nearest_in_range_all` (the batched
 spatial-query primitive that landed in EigenScript). Pinned to
-v0.14.2-line semantics; `--pkg` integration is available but the suite
+v0.22.0-line semantics; `--pkg` integration is available but the suite
 runs without packages.
 
 ## Gotchas
