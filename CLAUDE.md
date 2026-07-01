@@ -21,7 +21,7 @@ EigenScript is **not** vendored — point at a built binary:
 
 ```bash
 # Default path (matches tests/run_smoke.sh):
-/home/jon/EigenScript/src/eigenscript gauntlet.eigs --suite smoke
+../EigenScript/src/eigenscript gauntlet.eigs --suite smoke
 
 # Or use an installed binary:
 eigenscript gauntlet.eigs --suite smoke
@@ -36,7 +36,7 @@ Minimum language version for current workloads is **v0.13.0**;
 ## Run / test
 
 ```bash
-EIGS=/home/jon/EigenScript/src/eigenscript
+EIGS=../EigenScript/src/eigenscript
 
 # All smoke workloads at default size
 ./tests/run_smoke.sh
