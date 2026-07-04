@@ -30,7 +30,7 @@ eigenscript gauntlet.eigs --suite smoke
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
-CI builds and tests against EigenScript **v0.23.0**, pinned in
+CI builds and tests against EigenScript **v0.24.0**, pinned in
 `.github/workflows/ci.yml`.
 
 ## Run / test
@@ -110,7 +110,7 @@ ship the smaller default and document the larger mode.
 10 workloads, smoke green at default size. Latest addition:
 `swarm-batch` lab exercising `nearest_in_range_all` (the batched
 spatial-query primitive that landed in EigenScript). Pinned to
-v0.23.0-line semantics; `--pkg` integration is available but the suite
+v0.24.0-line semantics; `--pkg` integration is available but the suite
 runs without packages.
 
 ## Gotchas
