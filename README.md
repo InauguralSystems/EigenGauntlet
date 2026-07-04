@@ -16,7 +16,7 @@ fixed at the root.
 
 ## Requirements
 
-- EigenScript v0.22.0 (built from source; CI tests against this version)
+- EigenScript v0.24.0 (built from source; CI tests against this version)
 - No external runtime dependencies for the default smoke suite
 
 Use the local development binary directly:
