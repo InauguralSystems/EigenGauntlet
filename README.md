@@ -16,7 +16,7 @@ fixed at the root.
 
 ## Requirements
 
-- EigenScript v0.24.0 (built from source; CI tests against this version)
+- EigenScript v0.26.0 (built from source; CI tests against this version)
 - No external runtime dependencies for the default smoke suite
 
 Use the local development binary directly:
@@ -36,6 +36,7 @@ eigenscript gauntlet.eigs --suite smoke
 - `tensor` - batched neural-layer math, matrix/vector broadcasting, softmax
 - `dataflow` - JSON, strings, dictionaries, file I/O, EigenStore
 - `swarm` - real-time style entity simulation and spatial queries
+- `swarm-batch` - batched spatial queries via `nearest_in_range_all`
 - `concurrent` - threads, channels, non-blocking receive
 - `parser` - `try_parse`, `eval`, generated source, functions, match, f-strings
 - `memory` - list/dict/tensor churn, closures, arena mark/reset

@@ -10,6 +10,10 @@ realtime, and module/scope workloads.
 These numbers are not strict performance targets. They are a rough local
 regression signal for this specific machine.
 
+Note: the `swarm-batch` workload was added after this 2026-05-16 capture, so
+it has no line below; a current `run_smoke.sh` emits 11 workload lines. Re-run
+`run_smoke.sh` to re-capture on the recording machine before comparing.
+
 ## Smoke Size 1
 
 Command:

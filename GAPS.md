@@ -10,9 +10,10 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
 ## Resolved upstream — verified
 
 - 2026-06-29 → **FIXED (verified 2026-07-03)**: the minimal repro passes
-  against EigenScript main (`total=42 id=7`, keys intact) — closed by the
-  v0.22.0 threading-hardening batch (EigenScript#293). The `concurrent`
-  lab is unblocked. Original report:
+  against EigenScript main (`total=42 id=7`, keys intact) — fixed upstream
+  in v0.21.2 (EigenScript#293, commit 1d804c1); the subsequent v0.22.0
+  threading-hardening batch hardened the surrounding thread/channel paths.
+  The `concurrent` lab is unblocked. Original report:
 - 2026-06-29: `concurrent` lab — a dict sent across a channel from a spawned
   thread arrives with its entry **count** intact but its string **keys
   corrupted** (garbage bytes), so `msg.total` reads null → `cannot apply '+' to

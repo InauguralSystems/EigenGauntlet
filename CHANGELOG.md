@@ -2,10 +2,11 @@
 
 ## [0.1.0] — 2026-07-01
 
-### Workloads (10)
+### Workloads (11)
 - **tensor**: batched neural-layer math (matmul, relu, softmax)
 - **dataflow**: JSON round-trips, file I/O, EigenStore persistence
 - **swarm**: entity simulation with spatial queries
+- **swarm-batch**: batched spatial queries via `nearest_in_range_all`
 - **concurrent**: threads, channels, non-blocking receive
 - **parser**: try_parse validation, eval, generated source
 - **memory**: list/dict/tensor allocation churn, closures, arena

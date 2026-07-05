@@ -2,7 +2,7 @@
 
 EigenGauntlet is a stress-test application suite for
 [EigenScript](https://github.com/InauguralSystems/EigenScript).
-It exercises 10 workloads covering language breadth on constrained hardware.
+It exercises 11 workloads covering language breadth on constrained hardware.
 
 ## Getting Started
 
@@ -20,14 +20,14 @@ It exercises 10 workloads covering language breadth on constrained hardware.
 
 ## Workloads
 
-tensor, dataflow, swarm, concurrent, parser, memory, observer, io, realtime, module-scope
+tensor, dataflow, swarm, swarm-batch, concurrent, parser, memory, observer, io, realtime, module-scope
 
 ## Adding a Workload
 
 1. Create `src/new_lab.eigs` with a `run_new(size)` function
 2. Add it to `gauntlet.eigs` (load_file + run entry)
 3. Add assertions and timing metrics
-4. Update `tests/run_smoke.sh`
+4. Add the suite to `tests/run_each.sh` (the `for suite in ...` loop) and to the smoke branch in `gauntlet.eigs`
 
 ## License
 

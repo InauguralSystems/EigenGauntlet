@@ -20,13 +20,13 @@ sibling to EigenRegex, EigenMiniSat, and Tidepool.
 EigenScript is **not** vendored — point at a built binary:
 
 ```bash
-# Default path (matches tests/run_smoke.sh):
+# A built in-tree binary:
 ../EigenScript/src/eigenscript gauntlet.eigs --suite smoke
 
-# Or use an installed binary:
+# Or an installed binary:
 eigenscript gauntlet.eigs --suite smoke
 
-# Or override:
+# The runners default to `eigenscript` on PATH; EIGENSCRIPT_BIN overrides:
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
@@ -63,7 +63,7 @@ one-shot comparisons are noise on this hardware).
 | `dataflow` | JSON, strings, dicts, file I/O, EigenStore |
 | `swarm` | real-time-style entity simulation + spatial queries |
 | `swarm-batch` | batched spatial queries via `nearest_in_range_all` |
-| `concurrent` | threads, channels, `try_recv`/`recv_timeout` |
+| `concurrent` | threads, channels, `try_recv` |
 | `parser` | `try_parse`, `eval`, generated source, `match`, f-strings |
 | `memory` | list/dict/tensor churn, closures, arena mark/reset |
 | `observer` | interrogatives, predicates, `unobserved` blocks |
@@ -79,11 +79,10 @@ one-shot comparisons are noise on this hardware).
 | `src/*_lab.eigs` | One file per workload (the suite implementations) |
 | `src/common.eigs` | Shared helpers (timing, output format) |
 | `lib/gauntlet_scope.eigs` | Module-scope harness for the `module-scope` suite |
-| `fixtures/` | Static input data (JSON, etc.) |
+| `fixtures/` | EigenScript source fixture (`load_scope_fixture.eigs`) for the `module-scope` suite |
 | `tests/run_smoke.sh`, `tests/run_each.sh` | Runners |
 | `GAPS.md` | The forcing-function ledger — every friction logged here |
 | `BASELINE.md` | Recorded timings per workload |
-| `docs/` | Notes on specific stress paths |
 
 ## Hardware discipline
 
@@ -107,7 +106,7 @@ ship the smaller default and document the larger mode.
 
 ## Current state
 
-10 workloads, smoke green at default size. Latest addition:
+11 workloads, smoke green at default size. Latest addition:
 `swarm-batch` lab exercising `nearest_in_range_all` (the batched
 spatial-query primitive that landed in EigenScript). Pinned to
 v0.26.0-line semantics; `--pkg` integration is available but the suite
