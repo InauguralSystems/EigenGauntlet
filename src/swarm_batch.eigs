@@ -1,3 +1,4 @@
+# lint: loaded-by ../gauntlet.eigs -- lab fragment: gauntlet.eigs loads common.eigs first (#460)
 # ============================================================
 # Swarm-batch workload — same shape as swarm, uses
 # nearest_in_range_all to batch the per-entity neighbor query.

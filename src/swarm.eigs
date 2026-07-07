@@ -1,3 +1,4 @@
+# lint: loaded-by ../gauntlet.eigs -- lab fragment: gauntlet.eigs loads common.eigs first (#460)
 # ============================================================
 # Swarm workload — entity simulation and spatial queries
 # ============================================================
