@@ -119,10 +119,16 @@ has a reason to write. It found two BLOCKERs on its first run
 (EigenScript#642, #633 — see `GAPS.md`), which is the argument for it.
 
 **Why this repo and not upstream's suite:** EigenScript CI is ~33 min of
-wall per PR across 17 checks (ASan alone 8+ min). Coverage added there
-is paid on every PR forever; the same coverage here costs ~30 s in a
-repo that only runs on its own changes and pin bumps. That is the point
-of the Gauntlet as much as the workloads are.
+COMPUTE per PR across 17 legs — ~10 min wall, since the legs run in
+parallel behind one 8m36s ASan leg. Coverage added upstream is paid on
+every PR forever and lands behind that gate; the same coverage here
+costs ~24 s in a repo that only runs on its own changes and pin bumps.
+
+But note what this repo can and cannot be: the Gauntlet is pinned to a
+RELEASED tag, so it is **post-release coverage, not a pre-merge gate**.
+It can never replace an upstream leg — a leg moved here would stop
+blocking the PR that breaks it and only surface at the next pin bump.
+The Gauntlet ADDS cheap coverage; it does not subtract upstream cost.
 
 Pinned to v0.32.0-line semantics; `--pkg` integration is available but
 the suite runs without packages.
