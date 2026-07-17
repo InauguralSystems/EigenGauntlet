@@ -2,6 +2,15 @@
 
 Machine: 2007 Gateway laptop, dual Pentium class hardware.
 
+> **STALE — needs re-capture (2026-07-17).** That machine was retired (the
+> T3200 went to EigenOS); the current dev box is an ASUS X540NA (Celeron
+> N3350, 4 GB). The numbers below are therefore not comparable to a current
+> run. The constrained-hardware *regime* is unchanged — this is not modern
+> hardware either — so the baseline's purpose stands and only the capture is
+> out of date. Re-run `tests/run_smoke.sh` on the X540NA and replace the table
+> (the `swarm-batch` and `cross` workloads also post-date the 2026-05-16
+> capture; a current run emits 12 workload lines).
+
 EigenScript binary: `../EigenScript/src/eigenscript`
 
 Date captured: 2026-05-16 local development state after adding observer, I/O,

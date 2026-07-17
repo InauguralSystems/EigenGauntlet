@@ -1,0 +1,191 @@
+# lint: loaded-by ../gauntlet.eigs -- lab fragment: gauntlet.eigs loads common.eigs first (#460)
+# ============================================================
+# Cross workload — combinations of axes, not axes
+# ============================================================
+#
+# Every other lab here stresses ONE axis: concurrent_lab is spawn, observer_lab
+# is observe, io_lab is buffers, parser_lab is eval + listcomp. Eleven isolated
+# axes is not a gauntlet. This lab is the crossing — the combinations nobody has
+# a reason to write, which is exactly why nothing else covers them.
+#
+# The premise, from the day this file was added (2026-07-17): the three sharpest
+# bugs in a 15-finding upstream review were all INTERACTIONS, invisible to any
+# single-feature test —
+#   * a comprehension var × a closure mentioning it (adding a never-called
+#     lambda changed an earlier line's output — EigenScript#633, BLOCKER)
+#   * a modal × focus navigation (EigenScript#631)
+#   * line numbers × generated scale (EigenScript#630)
+# Single features pass. The interaction breaks.
+#
+# These assertions are DESCRIPTIVE, not aspirational: each pins the behavior the
+# pinned runtime actually has, so a crossing that starts lying shows up as a
+# gauntlet failure rather than as silence. Where a crossing's correct answer is
+# a genuine design question, the assertion pins the OBSERVED answer and says so
+# — a change there is a finding to adjudicate, not automatically a regression.
+
+define _cross_observer_in_task(size) as:
+    # observer x task: entropy/dH state is keyed to the Value OBJECT and the
+    # (env,slot) binding. A task runs on its own copying stack with deep-COPIED
+    # args, so a variable observed inside a task must carry its own trajectory —
+    # not inherit or corrupt the main task's.
+    define worker(n) as:
+        t is 1000000
+        t is 1000
+        t is 100
+        t is 10
+        t is 2
+        return report of t
+    x is 1000000
+    x is 1000
+    x is 100
+    x is 10
+    x is 2
+    tid is task_spawn of [worker, size]
+    inner is task_join of tid
+    outer is report of x
+    assert_eq of ["cross: observed trajectory inside a task", inner, "diverging"]
+    assert_eq of ["cross: main's trajectory survives the task", outer, "diverging"]
+
+define _cross_task_self_and_detach(size) as:
+    # task x identity x lifetime: a task detaching ITSELF while holding its own
+    # id, then dying. The handle slot must be reaped without the join hanging.
+    define selfer(n) as:
+        me is task_self of null
+        task_detach of me
+        return me
+    tid is task_spawn of [selfer, size]
+    # the task reaped itself, so the id reads as unknown afterwards
+    joined is task_join of tid
+    assert_eq of ["cross: joining a self-detached task returns null", joined, null]
+    assert_eq of ["cross: main task id is 0", task_self of null, 0]
+
+define _cross_sync_lock_across_comprehension(_size) as:
+    # lib/sync x comprehension-var leak: the lock is held ACROSS a comprehension
+    # whose variable leaks to the surrounding scope (intended semantics). The
+    # leak must not disturb the lock, and the lock must not suppress the leak.
+    #
+    # This crossing found TWO upstream bugs on its first run, both recorded in
+    # GAPS.md and neither worked around here:
+    #   * EigenScript#642 (BLOCKER) — a comprehension whose loop var shadows a
+    #     local computes garbage: [i*2 for i in [1,2,3]] yields [-2,-2,-2].
+    #   * EigenScript#633 (BLOCKER) — the read AFTER such a comprehension is
+    #     stale (slot) while eval sees the leaked value (env).
+    # Isolated with one-variable-changed reruns: no lock and no closure give the
+    # same divergence, module scope is correct, and a differently-named outer
+    # local is correct — so the LOCK is incidental to both. The lock half is
+    # what this lab can still assert honestly; the comprehension halves are
+    # parked until #642/#633 land rather than pinned to the buggy values.
+    # Re-add on the pin bump that carries the fixes:
+    #     assert_eq of ["...body saw the loop var", ys[2], 6]
+    #     assert_eq of ["...var still leaks under a lock", leaked, 3]
+    lk is lock_new of null
+    lock_acquire of lk
+    ys is [v * 2 for v in [1, 2, 3]]
+    lock_release of lk
+    assert_eq of ["cross: comprehension ran under a held lock", len of ys, 3]
+    assert_eq of ["cross: comprehension body saw its own loop var", ys[2], 6]
+    assert_true of ["cross: lock re-acquirable after the comprehension", (lock_acquire of lk) != 0]
+    lock_release of lk
+
+define _cross_buffer_in_hot_observed_loop(size) as:
+    # buffer x JIT-hot x observer: three layers of assumption at once. The loop
+    # is hot enough to compile, the accumulator is observed (so the entropy hook
+    # fires per assignment), and the values come from a C-backed buffer.
+    n is 512 * size
+    b is buffer of n
+    i is 0
+    unobserved:
+        loop while i < n:
+            b[i] is (i % 17) * 1.5
+            i is i + 1
+    acc is 0.0
+    j is 0
+    loop while j < n:
+        acc is acc + b[j]
+        j is j + 1
+    expect is 0.0
+    k is 0
+    unobserved:
+        loop while k < n:
+            expect is expect + (k % 17) * 1.5
+            k is k + 1
+    assert_eq of ["cross: hot observed loop over a buffer", acc, expect]
+    assert_eq of ["cross: buffer length survives the hot loop", buf_len of b, n]
+
+define _cross_eval_inside_task(size) as:
+    # eval x task: dynamic compilation on a task's copying stack. The task
+    # layer forbids yields inside a nested evaluation — eval that does NOT
+    # yield must still work, and its result must deep-copy back through join.
+    define evaler(n) as:
+        return eval of "2 + 3 * 4"
+    tid is task_spawn of [evaler, size]
+    r is task_join of tid
+    assert_eq of ["cross: eval inside a task", r, 14]
+
+define _cross_recursion_in_task(size) as:
+    # recursion x task: a task's copying stack is not the main C stack. Deep
+    # recursion inside a task is the crossing that would find a stack the task
+    # layer sized for shallow work.
+    define fib(n) as:
+        if n < 2:
+            return n
+        return (fib of (n - 1)) + (fib of (n - 2))
+    define rec_worker(n) as:
+        return fib of 18
+    tid is task_spawn of [rec_worker, size]
+    r is task_join of tid
+    assert_eq of ["cross: deep recursion inside a task", r, 2584]
+
+define _cross_module_state_and_tasks(_size) as:
+    # module state x task: task args are deep-COPIED (share-nothing). A task
+    # mutating a module-level structure must not be visible to main — that is
+    # the share-nothing contract, and it is exactly where a shared-reference
+    # slip would hide. Pins the copy, not a hope.
+    CROSS_SHARED is {"hits": 0}
+    define mutator(d) as:
+        d.hits is d.hits + 1
+        return d.hits
+    tid is task_spawn of [mutator, CROSS_SHARED]
+    inner is task_join of tid
+    assert_eq of ["cross: the task saw its own copy mutate", inner, 1]
+    assert_eq of ["cross: share-nothing — main's dict is untouched", CROSS_SHARED.hits, 0]
+
+define _cross_throw_from_task_caught_outside(size) as:
+    # error path x task: the task boundary must not DISTORT error semantics.
+    # Two shapes, because the language has two:
+    #   * `throw` preserves the thrown VALUE (a str stays a str)
+    #   * a runtime error is a {kind, message, line} dict
+    # Both must survive re-raise at join identically to how they behave on main
+    # — a boundary that deep-copies results is exactly where one could quietly
+    # become the other.
+    define thrower(n) as:
+        throw of "boom from a task"
+    tid is task_spawn of [thrower, size]
+    caught is null
+    try:
+        task_join of tid
+    catch e:
+        caught is e
+    assert_eq of ["cross: a task's throw re-raises the VALUE, not a wrapper", caught, "boom from a task"]
+    assert_eq of ["cross: and its type survives the boundary", type of caught, "str"]
+
+    define bad(n) as:
+        return undefined_xyz_zzz of 1
+    t2 is task_spawn of [bad, size]
+    kind is "none"
+    try:
+        task_join of t2
+    catch e2:
+        kind is e2.kind
+    assert_eq of ["cross: a task's runtime error re-raises as {kind,...}", kind, "undefined_name"]
+
+define cross_lab_run(size) as:
+    _cross_observer_in_task of size
+    _cross_task_self_and_detach of size
+    _cross_sync_lock_across_comprehension of size
+    _cross_buffer_in_hot_observed_loop of size
+    _cross_eval_inside_task of size
+    _cross_recursion_in_task of size
+    _cross_module_state_and_tasks of size
+    _cross_throw_from_task_caught_outside of size
+    return 0
