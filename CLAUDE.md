@@ -30,7 +30,7 @@ eigenscript gauntlet.eigs --suite smoke
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
-CI builds and tests against EigenScript **v0.30.0**, pinned in
+CI builds and tests against EigenScript **v0.32.0**, pinned in
 `.github/workflows/ci.yml`.
 
 ## Run / test
@@ -70,6 +70,7 @@ one-shot comparisons are noise on this hardware).
 | `io` | stream tensor I/O, buffers, byte reads, tensor save/load |
 | `realtime` | frame-budget fixed-step loop, monotonic timing |
 | `module-scope` | `eval`, `load_file`, import isolation, module closures |
+| `cross` | **the crossings** — combinations of the axes above, not a new axis |
 
 ## Layout
 
@@ -86,8 +87,12 @@ one-shot comparisons are noise on this hardware).
 
 ## Hardware discipline
 
-Defaults must run quickly on the target — a **2007 dual-Pentium laptop
-(T3200)**. Larger modes can exist but **must be opt-in and named
+Defaults must run quickly on the target — currently an **ASUS X540NA
+(Celeron N3350, 4 GB)**. (The 2007 dual-Pentium T3200 this was written
+for was retired to EigenOS; the *regime* is unchanged — this is still
+not modern hardware — so the discipline stands and only the machine
+changed. `BASELINE.md`'s numbers pre-date the move and need a
+re-capture.) Larger modes can exist but **must be opt-in and named
 clearly** (e.g. `--size 3`, not changing the default). When in doubt,
 ship the smaller default and document the larger mode.
 
@@ -106,11 +111,21 @@ ship the smaller default and document the larger mode.
 
 ## Current state
 
-11 workloads, smoke green at default size. Latest addition:
-`swarm-batch` lab exercising `nearest_in_range_all` (the batched
-spatial-query primitive that landed in EigenScript). Pinned to
-v0.30.0-line semantics; `--pkg` integration is available but the suite
-runs without packages.
+12 workloads, smoke green at default size. Latest addition: **`cross`**
+— the lab that crosses axes instead of adding one. The other 11 each
+stress a single axis (concurrent = spawn, observer = observe, io =
+buffers), which is not a gauntlet; `cross` is the combinations nobody
+has a reason to write. It found two BLOCKERs on its first run
+(EigenScript#642, #633 — see `GAPS.md`), which is the argument for it.
+
+**Why this repo and not upstream's suite:** EigenScript CI is ~33 min of
+wall per PR across 17 checks (ASan alone 8+ min). Coverage added there
+is paid on every PR forever; the same coverage here costs ~30 s in a
+repo that only runs on its own changes and pin bumps. That is the point
+of the Gauntlet as much as the workloads are.
+
+Pinned to v0.32.0-line semantics; `--pkg` integration is available but
+the suite runs without packages.
 
 ## Gotchas
 

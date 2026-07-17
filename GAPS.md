@@ -5,7 +5,26 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
 
 ## Open
 
-(none)
+- 2026-07-17 — **EigenScript#642 (BLOCKER)**: a comprehension whose loop var
+  shadows a local computes garbage. Inside a function, `i is 0 - 1` then
+  `[i * 2 for i in [1, 2, 3]]` yields `[-2, -2, -2]` — the body reads the outer
+  slot every iteration instead of its own loop var. rc=0, no diagnostic.
+  Controls (one variable changed each): no outer `i` -> `[2, 4, 6]`; module
+  scope -> `[2, 4, 6]`; outer named `q` -> `[2, 4, 6]`. Identical under
+  `EIGS_JIT_OFF=1`. Root cause `src/compiler.c:2443` — the listcomp binder
+  emits `OP_SET_NAME_LOCAL` (env) while a same-named plain assignment is
+  slot-promoted, so two live bindings exist and the body reads the wrong one.
+  Found by `cross_lab`'s `lib/sync` x comprehension crossing on its first run
+  (the lock was incidental — isolating it produced the controls above).
+  `cross_lab` parks the affected assertion rather than pinning the buggy value.
+
+- 2026-07-17 — **EigenScript#633 (BLOCKER)**: the read AFTER such a
+  comprehension is stale. Same root-cause family as #642, different symptom and
+  trigger: `print of i` returns the pre-comprehension slot value while
+  `eval of "i"` returns the leaked env value. Adding a never-called lambda
+  mentioning the name flips which binding the read sees, so program text after a
+  statement changes that statement's result. `cross_lab` re-derived this
+  independently and parks its leak assertion until the fix lands.
 
 ## Resolved upstream — verified
 

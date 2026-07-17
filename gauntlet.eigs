@@ -14,6 +14,8 @@ load_file of "src/observer_lab.eigs"
 load_file of "src/io_lab.eigs"
 load_file of "src/realtime_lab.eigs"
 load_file of "src/module_scope_lab.eigs"
+load_file of "lib/sync.eigs"
+load_file of "src/cross_lab.eigs"
 
 define parse_args() as:
     argv is args of null
@@ -69,6 +71,8 @@ elif suite == "realtime":
     timed_run of ["realtime", realtime_lab_run, size]
 elif suite == "module-scope" or suite == "module_scope":
     timed_run of ["module-scope", module_scope_lab_run, size]
+elif suite == "cross":
+    timed_run of ["cross", cross_lab_run, size]
 elif suite == "smoke":
     timed_run of ["tensor", tensor_lab_run, size]
     timed_run of ["dataflow", dataflow_run, size]
@@ -81,6 +85,7 @@ elif suite == "smoke":
     timed_run of ["io", io_lab_run, size]
     timed_run of ["realtime", realtime_lab_run, size]
     timed_run of ["module-scope", module_scope_lab_run, size]
+    timed_run of ["cross", cross_lab_run, size]
 else:
     print of f"Unknown suite: {suite}"
     assert of [0, "unknown suite"]
