@@ -74,16 +74,10 @@ one-shot comparisons are noise on this hardware).
 
 ## Layout
 
-| Path | Role |
-|---|---|
-| `gauntlet.eigs` | CLI entry — dispatches `--suite` to a lab |
-| `src/*_lab.eigs` | One file per workload (the suite implementations) |
-| `src/common.eigs` | Shared helpers (timing, output format) |
-| `lib/gauntlet_scope.eigs` | Module-scope harness for the `module-scope` suite |
-| `fixtures/` | EigenScript source fixture (`load_scope_fixture.eigs`) for the `module-scope` suite |
-| `tests/run_smoke.sh`, `tests/run_each.sh` | Runners |
-| `GAPS.md` | The forcing-function ledger — every friction logged here |
-| `BASELINE.md` | Recorded timings per workload |
+One `src/*_lab.eigs` per workload; `gauntlet.eigs` dispatches `--suite` to a
+lab. The `module-scope` suite is the odd one — it needs both
+`lib/gauntlet_scope.eigs` and the `fixtures/load_scope_fixture.eigs` source
+fixture. `BASELINE.md` holds recorded timings per workload.
 
 ## Hardware discipline
 
