@@ -43,8 +43,12 @@ define _cross_observer_in_task(size) as:
     tid is task_spawn of [worker, size]
     inner is task_join of tid
     outer is report of x
-    assert_eq of ["cross: observed trajectory inside a task", inner, "diverging"]
-    assert_eq of ["cross: main's trajectory survives the task", outer, "diverging"]
+    # A contracting descent closes on a limit, so the VALUE channel reads
+    # "improving" (EigenScript #892 routed numeric bindings off entropy — the
+    # label here is incidental; what the case pins is that the two trajectories
+    # are independent and neither is corrupted by the other).
+    assert_eq of ["cross: observed trajectory inside a task", inner, "improving"]
+    assert_eq of ["cross: main's trajectory survives the task", outer, "improving"]
 
 define _cross_task_self_and_detach(size) as:
     # task x identity x lifetime: a task detaching ITSELF while holding its own

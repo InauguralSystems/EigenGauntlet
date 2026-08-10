@@ -4,33 +4,49 @@
 # ============================================================
 
 define observer_lab_run(size) as:
-    # Predicates are WINDOWED (#200-#209): they read a trajectory of dH frames,
-    # not a single step. diverging/improving need count>=3 with a directional
-    # entropy ramp; converged/equilibrium need a full window (OBSERVER_WINDOW_N
-    # samples) at rest; oscillating needs >=4 dH sign flips. A 2-3 point
-    # trajectory now correctly reads "stable", so each case feeds a real window.
+    # Predicates are WINDOWED (#200-#209): they read a trajectory, not a single
+    # step. converged/equilibrium need a full window (OBSERVER_WINDOW_N samples)
+    # at rest; oscillating needs >=4 sign flips. A 2-3 point trajectory reads
+    # "stable", so each case below feeds a real window.
+    #
+    # Since #861/#864 (EigenScript PR #892) a NUMERIC binding is classified from
+    # the VALUE channel — relative steps Dv/(1+|v|) — not from entropy. These
+    # cases are therefore named for what the VALUE does. The entropy classifier
+    # is still live (non-numeric bindings) and is exercised explicitly below via
+    # `classify of [t, "entropy"]`, so re-routing did not drop it from the
+    # gauntlet's coverage.
 
-    # Diverging: entropy rises over a descent in value (count>=3).
+    # Improving: a contracting descent. Steps -999000, -900, -90, -8 are
+    # monotone and each shrinks well under 0.7x the older half — a summable
+    # tail, i.e. genuinely closing on a limit.
     x is 1000000
     x is 1000
     x is 100
     x is 10
     x is 2
-    x_pred is diverging
+    x_pred is improving
     x_report is report of x
-    assert_eq of ["observer diverging report", x_report, "diverging"]
-    assert_eq of ["observer diverging predicate", x_pred, 1]
+    assert_eq of ["observer improving report", x_report, "improving"]
+    assert_eq of ["observer improving predicate", x_pred, 1]
 
-    # Improving: entropy falls over an ascent in value (count>=3).
+    # The SAME trajectory on the entropy channel still reads "diverging" (H
+    # rises as |x| descends toward 1). This is the pre-#892 answer, kept under
+    # test by naming the channel instead of relying on the default route.
+    x_traj is trajectory of x
+    x_entropy is classify of [x_traj, "entropy"]
+    assert_eq of ["observer entropy channel", x_entropy, "diverging"]
+
+    # Diverging: growing same-sign steps 0.5, 4, 95, 999900 — non-vanishing
+    # motion with no limit to close on (the #422 clause).
     y is 0.5
     y is 1.0
     y is 5.0
     y is 100.0
     y is 1000000
-    y_pred is improving
+    y_pred is diverging
     y_report is report of y
-    assert_eq of ["observer improving report", y_report, "improving"]
-    assert_eq of ["observer improving predicate", y_pred, 1]
+    assert_eq of ["observer diverging report", y_report, "diverging"]
+    assert_eq of ["observer diverging predicate", y_pred, 1]
 
     # Converged: full dH window at rest in a low-entropy basin.
     z is 1000000
@@ -63,7 +79,11 @@ define observer_lab_run(size) as:
     v is 42
     v_pred is equilibrium
     v_report is report of v
-    assert_eq of ["observer equilibrium report", v_report, "equilibrium"]
+    # The quiescent lattice is nested: converged implies equilibrium AND stable,
+    # and `report` names the STRONGEST band that holds. A constant therefore
+    # reports "converged" while the equilibrium PREDICATE still answers 1 —
+    # the two surfaces are not in disagreement.
+    assert_eq of ["observer equilibrium report", v_report, "converged"]
     assert_eq of ["observer equilibrium predicate", v_pred, 1]
 
     # Oscillation: alternating value -> >=4 dH sign flips across the window.
@@ -88,12 +108,21 @@ define observer_lab_run(size) as:
 
     hot is 1
     age_before is when is hot
+    report_before is report of hot
     iterations is 20 * size
     unobserved:
         for i in range of iterations:
             hot is hot + i
     age_after is when is hot
-    assert_eq of ["unobserved age unchanged", age_after, age_before]
+    report_after is report of hot
+    # `unobserved:` suppresses OBSERVATION (entropy/dH), not assignment, so the
+    # assignment counter must still advance (EigenScript #908 — the old
+    # "unchanged" assertion encoded the bug: `when is x` skipped these while the
+    # history's own ordinal counter (#868) counted them, and any ordinal
+    # computed from `when is x` came out short by exactly this many).
+    assert_eq of ["unobserved assignments are counted", age_after, age_before + iterations]
+    # ...and this is the property the block DOES promise, stated directly.
+    assert_eq of ["unobserved suppresses observation", report_after, report_before]
 
     thresholds is get_observer_thresholds of null
     assert_eq of ["threshold tuple length", len of thresholds, 3]
