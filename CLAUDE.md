@@ -30,7 +30,7 @@ eigenscript gauntlet.eigs --suite smoke
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
-CI builds and tests against EigenScript **v0.39.0**, pinned in
+CI builds and tests against EigenScript **v0.40.0**, pinned in
 `.github/workflows/ci.yml`.
 
 ## Run / test
@@ -124,7 +124,7 @@ It can never replace an upstream leg — a leg moved here would stop
 blocking the PR that breaks it and only surface at the next pin bump.
 The Gauntlet ADDS cheap coverage; it does not subtract upstream cost.
 
-Pinned to v0.39.0-line semantics; `--pkg` integration is available but
+Pinned to v0.40.0-line semantics; `--pkg` integration is available but
 the suite runs without packages.
 
 ## Gotchas
