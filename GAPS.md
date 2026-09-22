@@ -46,6 +46,15 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
 
 ## Resolved
 
+- 2026-09-22 — **EigenScript#1212 (consumer migration)**: the M1 release
+  wave exposed an assertion that `unobserved:` freezes `report of hot`.
+  EigenScript #1049 deliberately keeps numeric value-window samples inside
+  that block, so the routed verdict may change. The observer lab now checks
+  the entropy gradient (`why is hot`) directly, keeps the assignment-count
+  check, verifies the computed sum, and runs an observed control that must
+  change its entropy gradient. The smoke command passes against v0.43.0 and
+  candidate `bb33420`; removing the block fails the entropy assertion on both.
+
 - 2026-05-30: `swarm` lab spent ~5 minutes at size 64 because the
   per-entity `nearest_in_range` call walked the entity list O(n) times per
   step, paying a dict pointer-chase per scalar on every visit. Fixed in
