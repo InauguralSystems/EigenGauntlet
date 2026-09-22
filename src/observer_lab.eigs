@@ -108,21 +108,33 @@ define observer_lab_run(size) as:
 
     hot is 1
     age_before is when is hot
-    report_before is report of hot
+    gradient_before is why is hot
     iterations is 20 * size
     unobserved:
         for i in range of iterations:
             hot is hot + i
     age_after is when is hot
-    report_after is report of hot
+    gradient_after is why is hot
     # `unobserved:` suppresses OBSERVATION (entropy/dH), not assignment, so the
     # assignment counter must still advance (EigenScript #908 — the old
     # "unchanged" assertion encoded the bug: `when is x` skipped these while the
     # history's own ordinal counter (#868) counted them, and any ordinal
     # computed from `when is x` came out short by exactly this many).
     assert_eq of ["unobserved assignments are counted", age_after, age_before + iterations]
-    # ...and this is the property the block DOES promise, stated directly.
-    assert_eq of ["unobserved suppresses observation", report_after, report_before]
+    # The entropy gradient is suppressed. Numeric `report of` instead reads
+    # the value window, which includes these assignments after EigenScript
+    # #1049; freezing that verdict was the stale assertion caught by #1212.
+    assert_eq of ["unobserved suppresses entropy updates", gradient_after, gradient_before]
+    assert_eq of ["unobserved computes the sum", hot, 1 + iterations * (iterations - 1) / 2]
+
+    # Control: the same assignments outside the block must change the entropy
+    # gradient, so the suppression check cannot pass over an inactive observer.
+    observed_hot is 1
+    observed_gradient_before is why is observed_hot
+    for i in range of iterations:
+        observed_hot is observed_hot + i
+    observed_gradient_after is why is observed_hot
+    assert_true of ["observed assignments update entropy", observed_gradient_after != observed_gradient_before]
 
     thresholds is get_observer_thresholds of null
     assert_eq of ["threshold tuple length", len of thresholds, 3]
