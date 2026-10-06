@@ -42,7 +42,7 @@ define module_scope_lab_run(size) as:
     assert_eq of ["import bump 1", gauntlet_scope.bump of null, 1]
     assert_eq of ["import bump 2", gauntlet_scope.bump of null, 2]
     assert_eq of ["import state visible to getter", gauntlet_scope.get_counter of null, 2]
-    assert_eq of ["import private filtered", has_key of [gauntlet_scope, "_private_secret"], 0]
+    assert_true of ["import private filtered", not (has_key of [gauntlet_scope, "_private_secret"])]
     _expect_undefined of ["import does not leak state", "scope_counter"]
 
     module_counter_fn is gauntlet_scope.make_counter of 30
