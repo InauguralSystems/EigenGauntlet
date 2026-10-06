@@ -27,7 +27,7 @@ define dataflow_run(size) as:
     mkdir of "tmp"
     path is "tmp/dataflow.json"
     write_ok is write_text of [path, encoded]
-    assert_eq of ["write json", write_ok, 1]
+    assert_true of ["write json", write_ok]
     loaded is read_text of path
     assert_true of ["read json", len of loaded > 10]
 

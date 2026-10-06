@@ -27,7 +27,7 @@ define observer_lab_run(size) as:
     x_pred is improving
     x_report is report of x
     assert_eq of ["observer improving report", x_report, "improving"]
-    assert_eq of ["observer improving predicate", x_pred, 1]
+    assert_true of ["observer improving predicate", x_pred]
 
     # The SAME trajectory on the entropy channel still reads "diverging" (H
     # rises as |x| descends toward 1). This is the pre-#892 answer, kept under
@@ -46,7 +46,7 @@ define observer_lab_run(size) as:
     y_pred is diverging
     y_report is report of y
     assert_eq of ["observer diverging report", y_report, "diverging"]
-    assert_eq of ["observer diverging predicate", y_pred, 1]
+    assert_true of ["observer diverging predicate", y_pred]
 
     # Converged: full dH window at rest in a low-entropy basin.
     z is 1000000
@@ -63,7 +63,7 @@ define observer_lab_run(size) as:
     z_pred is converged
     z_report is report of z
     assert_eq of ["observer converged report", z_report, "converged"]
-    assert_eq of ["observer converged predicate", z_pred, 1]
+    assert_true of ["observer converged predicate", z_pred]
 
     # Equilibrium: full dH window at rest at a moderate entropy level.
     v is 42
@@ -84,7 +84,7 @@ define observer_lab_run(size) as:
     # reports "converged" while the equilibrium PREDICATE still answers 1 —
     # the two surfaces are not in disagreement.
     assert_eq of ["observer equilibrium report", v_report, "converged"]
-    assert_eq of ["observer equilibrium predicate", v_pred, 1]
+    assert_true of ["observer equilibrium predicate", v_pred]
 
     # Oscillation: alternating value -> >=4 dH sign flips across the window.
     w is 1000000
@@ -97,7 +97,7 @@ define observer_lab_run(size) as:
     w_pred is oscillating
     w_report is report of w
     assert_eq of ["observer oscillating report", w_report, "oscillating"]
-    assert_eq of ["observer oscillating predicate", w_pred, 1]
+    assert_true of ["observer oscillating predicate", w_pred]
 
     snap is observe of w
     w_name is who is w

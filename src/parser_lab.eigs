@@ -4,12 +4,12 @@
 
 define _require_parse(label, source) as:
     ok is try_parse of source
-    assert_eq of [label, ok, 1]
+    assert_true of [label, ok]
     return ok
 
 define _require_reject(label, source) as:
     ok is try_parse of source
-    assert_eq of [label, ok, 0]
+    assert_true of [label, not ok]
     return ok
 
 define parser_lab_run(size) as:
