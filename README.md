@@ -39,7 +39,7 @@ eigenscript gauntlet.eigs --suite smoke
 - `swarm-batch` - batched spatial queries via `nearest_in_range_all`
 - `concurrent` - threads, channels, non-blocking receive
 - `parser` - `try_parse`, `eval`, generated source, functions, match, f-strings
-- `memory` - list/dict/tensor churn, closures, arena mark/reset
+- `memory` - list/dict/tensor churn, closures
 - `observer` - interrogatives, predicates, report states, unobserved blocks
 - `io` - stream tensor I/O, buffers, byte reads, tensor save/load
 - `realtime` - frame-budget style fixed-step loop with monotonic timing
