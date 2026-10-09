@@ -65,7 +65,7 @@ one-shot comparisons are noise on this hardware).
 | `swarm-batch` | batched spatial queries via `nearest_in_range_all` |
 | `concurrent` | threads, channels, `try_recv` |
 | `parser` | `try_parse`, `eval`, generated source, `match`, f-strings |
-| `memory` | list/dict/tensor churn, closures, arena mark/reset |
+| `memory` | list/dict/tensor churn, closures |
 | `observer` | interrogatives, predicates, `unobserved` blocks |
 | `io` | stream tensor I/O, buffers, byte reads, tensor save/load |
 | `realtime` | frame-budget fixed-step loop, monotonic timing |
