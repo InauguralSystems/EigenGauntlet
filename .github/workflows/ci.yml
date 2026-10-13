@@ -20,3 +20,6 @@ jobs:
 
       - name: Run smoke suite
         run: tests/run_smoke.sh
+
+      - name: Run the tape crossing (two child interpreters, own suite)
+        run: eigenscript gauntlet.eigs --suite cross-tape

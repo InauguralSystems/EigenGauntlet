@@ -1,0 +1,41 @@
+# Child program for cross_lab's tape x tasks x containers crossing. Run under
+# EIGS_TRACE, then again under EIGS_REPLAY; the two stdouts must be identical.
+# Every nondeterministic input below is a recorded builtin (random_int,
+# random_hex), and the task schedule is seeded FROM one of them, so the
+# interleaving itself comes off the tape.
+
+argv is args of null
+n is 4
+if (len of argv) > 0:
+    n is floor of (num of argv[0])
+seed is random_int of [1, 1000000]
+task_sched_seed of seed
+nondet is 1
+
+board is {"cells": [0 for k in range of n], "who": []}
+
+define worker(box) as:
+    local me is task_self of null
+    local j is 0
+    loop while j < (len of box.cells):
+        box.cells[j] is box.cells[j] + (random_int of [1, 9]) * me
+        append of [box.who, me]
+        task_yield of null
+        j is j + 1
+    task_send of [0, box]
+    return me
+
+ids is [task_spawn of [worker, board] for w in [1, 2, 3]]
+nondet is nondet + 3 * n
+got is []
+loop while (len of got) < 3:
+    append of [got, task_recv of null]
+joined is [task_join of t for t in ids]
+merged is [0 for k in range of n]
+for g in got:
+    for k in range of n:
+        merged[k] is merged[k] + g.cells[k]
+order is [g.who[0] for g in got]
+tag is random_hex of 8
+nondet is nondet + 1
+print of f"merged={merged} order={order} joined={joined} tag={tag} nondet={nondet}"

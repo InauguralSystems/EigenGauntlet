@@ -183,6 +183,246 @@ define _cross_throw_from_task_caught_outside(size) as:
         kind is e2.kind
     assert_eq of ["cross: a task's runtime error re-raises as {kind,...}", kind, "undefined_name"]
 
+define _cross_unobserved_error_reentry(size) as:
+    # unobserved: x an error x a different level x re-entry. An error raised
+    # inside an `unobserved:` block and caught somewhere ELSE must leave the
+    # observer on: a predicate afterwards is answered, never "the observer is
+    # off". Two shapes the Gauntlet can reach in-process:
+    #   * an eval'd chunk raises inside its own unobserved: and a try in THIS
+    #     function catches it (the try restores the depth it saved, #871)
+    #   * a TASK raises inside unobserved:, dies uncaught, and main asks a
+    #     predicate before AND after joining it. The task's halt is the
+    #     uncaught-halt path EigenScript#1735 fixed (released v0.46.0 leaves
+    #     the depth raised for the rest of the process; fixed after the cut).
+    define probe() as:
+        # a fresh binding each call, so the trajectory is only these five
+        local p is 1000000
+        p is 1000
+        p is 100
+        p is 10
+        p is 2
+        return converged of p
+    define ask() as:
+        local answer is "unset"
+        try:
+            answer is probe of null
+        catch e:
+            answer is e.message
+        return answer
+    local i is 0
+    loop while i < size:
+        caught is "none"
+        try:
+            eval of "unobserved:\n    throw of \"gauntlet: deliberate error inside an eval'd unobserved: block\"\n"
+        catch e:
+            caught is e
+        assert_true of ["cross: eval'd unobserved: error reached the caller", (index_of of [caught, "deliberate"]) >= 0]
+        assert_eq of ["cross: predicate answered after an eval'd unobserved: error", ask of null, false]
+        i is i + 1
+
+    define dies_unobserved(n) as:
+        unobserved:
+            throw of "gauntlet: deliberate uncaught error inside unobserved: in a task (#1735 crossing)"
+        return n
+    tid is task_spawn of [dies_unobserved, size]
+    spins is 0
+    loop while (task_alive of tid) and spins < 1000:
+        task_yield of null
+        spins is spins + 1
+    assert_eq of ["cross: the unobserved: task has died", task_alive of tid, false]
+    before_join is ask of null
+    joined is "none"
+    try:
+        task_join of tid
+    catch e:
+        joined is e
+    assert_true of ["cross: join re-raised the task's unobserved: error", (index_of of [joined, "#1735 crossing"]) >= 0]
+    after_join is ask of null
+    if before_join == false and after_join == false:
+        return 1
+    # Not pinned as expected: the released pin answers "observer is off" here.
+    assert_true of ["cross: the off-observer answer is the #1735 signature", (index_of of [f"{before_join}{after_join}", "observer is off"]) >= 0]
+    known_gap of ["cross: predicate after a task died inside unobserved:", "EigenScript#1735", "0.46.0"]
+    return 0
+
+define _singleton_burst(n, cells, d) as:
+    # The observed hot loop. Run as a function so the JIT's entry gate fires:
+    # a chunk whose loop passed EIGS_JIT_ITER_THRESHOLD (500) back edges is
+    # compiled on its NEXT entry, so the second burst runs native. (The OSR
+    # gate for one-shot loops is 5000 back edges, past the smoke budget.)
+    local nul is null
+    local yes is 1 == 1
+    local no is 1 == 2
+    local nones is 0
+    local trues is 0
+    local t is "unset"
+    local i is 0
+    loop while i < n:
+        if (type of nul) == "none":
+            nones is nones + 1
+        if (str of yes) == "true":
+            trues is trues + 1
+        t is type of no
+        cells[0] is nul
+        cells[1] is yes
+        d["n"] is nul
+        d["f"] is no
+        i is i + 1
+    return [nones, trues, t]
+
+define _cross_singletons_in_hot_observed_loop(size) as:
+    # null/bool singletons x builtin calls x a JIT-hot OBSERVED loop x slots.
+    # The singletons' refcounts are never maintained, so any path that treats
+    # one as a counted heap value steals a count per release; EigenScript#1729
+    # (fixed before the v0.46.0 cut) drove null's 1000000 margin to zero and
+    # free()d a static after ~1.05M calls. The smoke size cannot reach that
+    # margin -- `--suite soak` (1000x) does: each singleton passes through a
+    # builtin call and a slot store 1100*size times (two bursts of 550*size).
+    yes is 1 == 1
+    no is 1 == 2
+    xs is [0, 0, 0]
+    d is {"n": 0, "y": 0, "f": 0}
+    per is 550 * size
+    calls is 0
+    nones is 0
+    trues is 0
+    last is "unset"
+    for burst in [1, 2]:
+        r is _singleton_burst of [per, xs, d]
+        nones is nones + r[0]
+        trues is trues + r[1]
+        last is r[2]
+        calls is calls + 3 * per
+    assert_eq of ["cross: type of null in a hot observed loop", nones, 2 * per]
+    assert_eq of ["cross: str of true in a hot observed loop", trues, 2 * per]
+    assert_eq of ["cross: type of false survives the loop", last, "bool"]
+    assert_eq of ["cross: null survives a list slot", xs[0], null]
+    assert_eq of ["cross: true survives a list slot", xs[1], yes]
+    assert_eq of ["cross: false survives a dict slot", d["f"], no]
+    assert_eq of ["cross: null survives a dict slot", d["n"], null]
+    return calls
+
+define _cross_numbers_in_slots_tasks_comprehension(size) as:
+    # numbers in list/dict slots (NaN-boxed storage, new in v0.46.0) x tasks x
+    # comprehension x dict iteration. Values chosen to sit near the encoding's
+    # edges: -0, a non-representable sum, 2^53+1, the saturation bounds, the
+    # smallest subnormal. Each task gets a deep COPY, mutates numbers in its
+    # copy's slots, and returns them by join AND by mailbox.
+    edge is [0.0 - 0.0, 0.1 + 0.2, 9007199254740993, 1e308, 0 - 1e308, 5e-324, 2.5, 0 - 7]
+    vals is []
+    k is 0
+    loop while k < size:
+        for v in edge:
+            append of [vals, v]
+        k is k + 1
+    shared is {"vals": vals, "count": 0, "first": vals[1]}
+    define slot_bumper(box) as:
+        local out is [v * 2 for v in box.vals]
+        box.vals[0] is 42
+        box.count is box.count + 1
+        task_send of [0, box]
+        return out
+    ids is [task_spawn of [slot_bumper, shared] for w in [1, 2, 3]]
+    doubled is [task_join of t for t in ids]
+    msgs is []
+    loop while (len of msgs) < 3:
+        append of [msgs, task_recv of null]
+    # share-nothing: main's slots are untouched by the tasks' writes
+    assert_eq of ["cross: tasks did not write main's number slot", shared.vals[0], 0]
+    assert_eq of ["cross: tasks did not write main's dict count", shared.count, 0]
+    assert_eq of ["cross: each task mutated its own copy", [m.count for m in msgs], [1, 1, 1]]
+    assert_eq of ["cross: each copy's slot write landed", [m.vals[0] for m in msgs], [42, 42, 42]]
+    # the comprehension inside the task saw the slot values exactly
+    expect is [v * 2 for v in vals]
+    assert_eq of ["cross: doubled through a task equals doubled on main", doubled[2], expect]
+    assert_eq of ["cross: saturation survives the slot round trip", doubled[0][3], 1e308]
+    assert_eq of ["cross: 2^53+1 is stored as 2^53", shared.vals[2], 9007199254740992]
+    assert_eq of ["cross: 0.1+0.2 is not 0.3 in a slot", shared.vals[1] == 0.3, false]
+    # dict iteration: keys in insertion order, values read back by key
+    ks is keys of msgs[0]
+    assert_eq of ["cross: a mailbox dict keeps its key order", ks, ["vals", "count", "first"]]
+    fk is "first"
+    firsts is [m[fk] for m in msgs]
+    assert_eq of ["cross: dict number read by a computed key in a comprehension", firsts, [shared.first, shared.first, shared.first]]
+    total is 0
+    for kk in keys of shared:
+        if (type of shared[kk]) == "num":
+            total is total + shared[kk]
+    assert_eq of ["cross: dict iteration sums the number slots", total, shared.first]
+    return len of vals
+
+define _cross_bools_containers_json(size) as:
+    # the bool type x containers x JSON x comparison errors. Bools as dict
+    # values and list elements must survive json_encode/json_decode as BOOLS
+    # (not 1/0), and comparing one with a number must raise the catchable
+    # type_mismatch -- including from inside a comprehension filter, where the
+    # comprehension var then leaks holding the element that raised.
+    yes is 1 == 1
+    no is 1 == 2
+    xs is []
+    k is 0
+    loop while k < size:
+        append of [xs, yes]
+        append of [xs, no]
+        append of [xs, 1]
+        append of [xs, 0]
+        k is k + 1
+    d is {"on": yes, "off": no, "n": 1, "z": 0, "xs": xs}
+    s is json_encode of d
+    assert_true of ["cross: bools encode as JSON literals", (index_of of [s, "\"on\":true,\"off\":false"]) >= 0]
+    back is json_decode of s
+    assert_eq of ["cross: a decoded bool is a bool", type of back.on, "bool"]
+    assert_eq of ["cross: a decoded number is a number", type of back.n, "num"]
+    assert_eq of ["cross: the JSON round trip is equal", back == d, true]
+    types is [type of v for v in back.xs]
+    assert_eq of ["cross: decoded list keeps bools", [types[0], types[1], types[2], types[3]], ["bool", "bool", "num", "num"]]
+    kind is "none"
+    try:
+        r is back.on == 1
+    catch e:
+        kind is e.kind
+    assert_eq of ["cross: bool == num raises", kind, "type_mismatch"]
+    kind2 is "none"
+    try:
+        r2 is back.xs[3] != no
+    catch e:
+        kind2 is e.kind
+    assert_eq of ["cross: num != bool raises", kind2, "type_mismatch"]
+    kind3 is "none"
+    try:
+        ys is [bv for bv in back.xs if bv == yes]
+    catch e:
+        kind3 is e.kind
+    assert_eq of ["cross: bool == num raises inside a comprehension filter", kind3, "type_mismatch"]
+    # descriptive: the filter got through yes, no, then raised on the 1
+    assert_eq of ["cross: comprehension var leaks the element that raised", bv, 1]
+    return len of back.xs
+
+define _cross_tape_tasks_containers(size) as:
+    # tape x tasks x containers: a child records a run whose task schedule is
+    # seeded from a recorded random, three tasks mutate copies of a container
+    # and mail them back, and the merge is printed. Replaying the tape must
+    # print the same line, and every nondet call the child counted must be an
+    # N record on the tape.
+    exe is exe_path of null
+    tape is mktemp of null
+    child is "fixtures/tape_tasks_child.eigs"
+    n is f"{4 * size}"
+    rec is exec_capture of [["env", f"EIGS_TRACE={tape}", exe, child, n], 60]
+    rep is exec_capture of [["env", f"EIGS_REPLAY={tape}", exe, child, n], 60]
+    lines is split of [read_text of tape, "\n"]
+    rm of tape
+    assert_eq of ["cross: tape child recorded", rec[0], 0]
+    assert_eq of ["cross: tape child replayed", rep[0], 0]
+    assert_true of ["cross: the recorded run printed its merge", (index_of of [rec[1], "merged="]) >= 0]
+    assert_eq of ["cross: replay of a task-mutated container is identical", rep[1], rec[1]]
+    nrec is len of [l for l in lines if (starts_with of [l, "N 0 random_int="]) or (starts_with of [l, "N 0 random_hex="])]
+    at is index_of of [rec[1], "nondet="]
+    claimed is num of (trim of (substr of [rec[1], at + 7, (len of rec[1]) - at - 7]))
+    assert_true of ["cross: the child counted its nondet calls", claimed > 0]
+    assert_eq of ["cross: every counted nondet call is an N record", nrec, claimed]
+    return nrec
+
 define cross_lab_run(size) as:
     _cross_observer_in_task of size
     _cross_task_self_and_detach of size
@@ -192,4 +432,15 @@ define cross_lab_run(size) as:
     _cross_recursion_in_task of size
     _cross_module_state_and_tasks of size
     _cross_throw_from_task_caught_outside of size
-    return 0
+    _cross_unobserved_error_reentry of size
+    calls is _cross_singletons_in_hot_observed_loop of size
+    slots is _cross_numbers_in_slots_tasks_comprehension of size
+    bools is _cross_bools_containers_json of size
+    return f"singleton_calls={calls} slots={slots} bools={bools}"
+
+define cross_tape_lab_run(size) as:
+    # Its own suite, not part of `cross`: it spawns two child interpreters
+    # (~17 ms on the X540NA), which alone would cost the default smoke run
+    # more than its 1.3x budget. CI runs it as a separate step.
+    taped is _cross_tape_tasks_containers of size
+    return f"tape_nondet={taped}"

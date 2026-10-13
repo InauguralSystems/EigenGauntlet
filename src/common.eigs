@@ -20,3 +20,25 @@ define sum_list(items) as:
         total is total + item
     return total
 
+
+# A KNOWN GAP is an upstream bug the pinned release still has and a newer
+# build has fixed. The crossing that sees it must not pin the wrong answer as
+# expected, and must not turn the pinned CI red over a bug already fixed
+# upstream. So the tolerance is a WAIVER, pinned to the one release it was
+# observed on: it holds only when the running binary reports exactly
+# `pinned_version`, and `--strict-gaps` turns every known gap into a failure.
+# The version query spawns a child, so it runs only when the gap is observed.
+GAUNTLET_GAPS is {"strict": 0, "seen": []}
+
+define known_gap(label, issue, pinned_version) as:
+    local probe is exec_capture of [exe_path of null, "--version"]
+    local ver is trim of probe[1]
+    if GAUNTLET_GAPS.strict:
+        print of f"ASSERT {label}: known gap {issue} observed under --strict-gaps"
+        assert of [0, label]
+    if ver != pinned_version:
+        print of f"ASSERT {label}: {issue} waiver is for v{pinned_version}, this binary reports '{ver}' and still has the bug"
+        assert of [0, label]
+    print of f"KNOWN-GAP {issue} (waived on v{pinned_version} only): {label}"
+    append of [GAUNTLET_GAPS.seen, issue]
+    return 1

@@ -16,8 +16,11 @@ fixed at the root.
 
 ## Requirements
 
-- EigenScript v0.26.0 (built from source; CI tests against this version)
-- No external runtime dependencies for the default smoke suite
+- EigenScript built from source. CI builds and tests against the release
+  pinned in `.github/workflows/ci.yml` (the `git clone --branch` line);
+  that line is the only place the version is written down.
+- No external runtime dependencies for the default smoke suite (the
+  `cross-tape` suite also needs `env` on `PATH`)
 
 Use the local development binary directly:
 
@@ -44,12 +47,22 @@ eigenscript gauntlet.eigs --suite smoke
 - `io` - stream tensor I/O, buffers, byte reads, tensor save/load
 - `realtime` - frame-budget style fixed-step loop with monotonic timing
 - `module-scope` - `eval`, `load_file`, import isolation, module closures
+- `cross` - the crossings: combinations of the axes above that nobody has a
+  reason to write (observer x tasks, errors inside `unobserved:` x tasks,
+  null/bool singletons x builtins x a JIT-hot observed loop, numbers in
+  container slots x tasks x comprehensions, bools x JSON x comparison errors)
+- `cross-tape` - tape x tasks x containers: a child run under `EIGS_TRACE`,
+  replayed under `EIGS_REPLAY`, must print the same line (two child
+  interpreters, so it is its own suite; CI runs it as a separate step)
+- `soak` - not a workload: `cross` and `cross-tape` at 1000x the size, for
+  off-box fuzz runs
 
 ## Hardware Discipline
 
-This repo is designed for a 2007 dual-Pentium laptop. Defaults must stay small
-enough to run quickly on that hardware. Larger modes can exist, but they should
-be opt-in and named clearly.
+Defaults must stay small enough to run quickly on constrained hardware: the
+recording machine is an ASUS X540NA (Celeron N3350, 4 GB), and `BASELINE.md`
+holds its numbers. Larger modes exist, but they are opt-in and named clearly
+(`--size N`, `--suite soak`).
 
 ## Commands
 
@@ -65,4 +78,10 @@ be opt-in and named clearly.
 
 # Run a bigger local pass
 ../EigenScript/src/eigenscript gauntlet.eigs --suite smoke --size 3
+
+# The crossings at 1000x, for off-box fuzz runs (~5 s on the X540NA)
+../EigenScript/src/eigenscript gauntlet.eigs --suite soak
+
+# Fail on a known upstream gap instead of printing KNOWN-GAP (see GAPS.md)
+../EigenScript/src/eigenscript gauntlet.eigs --suite cross --strict-gaps
 ```
