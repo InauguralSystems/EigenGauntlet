@@ -20,3 +20,47 @@ define sum_list(items) as:
         total is total + item
     return total
 
+
+# A KNOWN GAP is an upstream bug the pinned release still has and a newer
+# build has fixed. The crossing that sees it must not pin the wrong answer as
+# expected, and must not turn the pinned CI red over a bug already fixed
+# upstream. So the tolerance is a WAIVER, pinned to the one release it was
+# observed on: it holds only when the running binary reports exactly
+# `pinned_version`, and `--strict-gaps` turns every known gap into a failure.
+# The version query spawns a child, so it runs only when the gap is observed.
+#
+# The waiver keys ONLY on `--version`. A main build that still reports the
+# pinned version but has LOST the upstream fix passes here silently (printing
+# KNOWN-GAP), until the pin moves past that version.
+#
+# A failed waiver is RECORDED, not raised: the crossings after it still run,
+# so a lapsed waiver cannot hide a later crossing's failure (or crash). The
+# runner calls gaps_verdict at the end of the run, which lists every recorded
+# failure and exits nonzero.
+GAUNTLET_GAPS is {"strict": 0, "seen": [], "failed": []}
+
+define known_gap(label, issue, pinned_version) as:
+    local probe is exec_capture of [exe_path of null, "--version"]
+    local ver is trim of probe[1]
+    local reason is ""
+    if GAUNTLET_GAPS.strict:
+        reason is f"known gap {issue} observed under --strict-gaps"
+    elif ver != pinned_version:
+        reason is f"{issue} waiver is for v{pinned_version}, this binary reports '{ver}' and still has the bug"
+    if reason != "":
+        print of f"GAP-FAIL {label}: {reason} (recorded; the run continues)"
+        append of [GAUNTLET_GAPS.failed, f"{label}: {reason}"]
+        return 0
+    print of f"KNOWN-GAP {issue} (waived on v{pinned_version} only): {label}"
+    append of [GAUNTLET_GAPS.seen, issue]
+    return 1
+
+define gaps_verdict() as:
+    local n is len of GAUNTLET_GAPS.failed
+    if n == 0:
+        return 1
+    print of f"GAP-FAIL summary: {n} known-gap waiver failure(s)"
+    for f in GAUNTLET_GAPS.failed:
+        print of f"  - {f}"
+    assert of [0, f"{n} known-gap waiver failure(s)"]
+    return 0

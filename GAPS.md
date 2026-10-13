@@ -5,6 +5,22 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
 
 ## Open
 
+- 2026-10-12 — **EigenScript#1735 (fixed upstream after the v0.46.0 cut; a
+  KNOWN-GAP on that pin)**: a task that raises inside `unobserved:` and dies
+  uncaught leaves the observer depth raised for the rest of the process.
+  Main's next predicate, before or after `task_join` catches the error,
+  raises "the observer is off inside an 'unobserved:' block". Minimal repro:
+  `define tw(n) as:` / `unobserved:` / `throw of "x"`, spawn it, yield until
+  it is dead, then `converged of p` on a fresh 5-step trajectory. v0.46.0
+  raises; `8a1e86dd` (#1735) answers `false`. `cross_lab`'s
+  `_cross_unobserved_error_reentry` asserts the correct answer and routes the
+  pin's answer through `known_gap`, which waives it ONLY when the binary
+  reports `0.46.0` (it keys ONLY on `--version`, so a main build that reports
+  0.46.0 but has lost the #1735 fix passes silently until the pin moves). A
+  failed waiver is recorded and later crossings still run. On the next pin bump the waiver fails by itself if the
+  bug is still there, and is dead code once it is not: delete the
+  `known_gap` call then.
+
 - 2026-07-17 — **EigenScript#642 (BLOCKER)**: a comprehension whose loop var
   shadows a local computes garbage. Inside a function, `i is 0 - 1` then
   `[i * 2 for i in [1, 2, 3]]` yields `[-2, -2, -2]` — the body reads the outer

@@ -26,6 +26,8 @@ define parse_args() as:
             if i + 1 < (len of argv):
                 i is i + 1
                 cfg.suite is argv[i]
+        elif argv[i] == "--strict-gaps":
+            GAUNTLET_GAPS.strict is 1
         elif argv[i] == "--size":
             if i + 1 < (len of argv):
                 i is i + 1
@@ -73,6 +75,15 @@ elif suite == "module-scope" or suite == "module_scope":
     timed_run of ["module-scope", module_scope_lab_run, size]
 elif suite == "cross":
     timed_run of ["cross", cross_lab_run, size]
+elif suite == "cross-tape" or suite == "cross_tape":
+    timed_run of ["cross-tape", cross_tape_lab_run, size]
+elif suite == "soak":
+    # Off-box fuzz scale: the crossings at 1000x the requested size. Not part
+    # of smoke; `--size` still multiplies (soak --size 2 = 2000x).
+    soak is size * 1000
+    print of f"soak: crossings at size={soak}"
+    timed_run of ["cross", cross_lab_run, soak]
+    timed_run of ["cross-tape", cross_tape_lab_run, soak]
 elif suite == "smoke":
     timed_run of ["tensor", tensor_lab_run, size]
     timed_run of ["dataflow", dataflow_run, size]
@@ -90,4 +101,5 @@ else:
     print of f"Unknown suite: {suite}"
     assert of [0, "unknown suite"]
 
+gaps_verdict of null
 print of "EigenGauntlet complete"

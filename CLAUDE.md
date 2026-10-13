@@ -30,8 +30,9 @@ eigenscript gauntlet.eigs --suite smoke
 EIGENSCRIPT_BIN=/path/to/eigenscript ./tests/run_smoke.sh
 ```
 
-CI builds and tests against EigenScript **v0.46.0**, pinned in
-`.github/workflows/ci.yml`.
+CI builds and tests against the EigenScript release pinned in
+`.github/workflows/ci.yml` (the `git clone --branch` line). That line is the
+only place the version is written; don't repeat it in prose.
 
 ## Run / test
 
@@ -49,6 +50,12 @@ $EIGS gauntlet.eigs --suite tensor
 
 # Bigger pass (size scales workload, NOT a new suite)
 $EIGS gauntlet.eigs --suite smoke --size 3
+
+# The crossings at 1000x for off-box fuzz runs (cross + cross-tape)
+$EIGS gauntlet.eigs --suite soak
+
+# Known upstream gaps fail instead of printing KNOWN-GAP
+$EIGS gauntlet.eigs --suite cross --strict-gaps
 ```
 
 `BASELINE.md` records timing snapshots; update it when you've
@@ -71,6 +78,8 @@ one-shot comparisons are noise on this hardware).
 | `realtime` | frame-budget fixed-step loop, monotonic timing |
 | `module-scope` | `eval`, `load_file`, import isolation, module closures |
 | `cross` | **the crossings** — combinations of the axes above, not a new axis |
+| `cross-tape` | tape × tasks × containers (record/replay of a child run; own suite because it spawns two interpreters) |
+| `soak` | not a workload: `cross` + `cross-tape` at 1000× size |
 
 ## Layout
 
@@ -85,9 +94,8 @@ Defaults must run quickly on the target — currently an **ASUS X540NA
 (Celeron N3350, 4 GB)**. (The 2007 dual-Pentium T3200 this was written
 for was retired to EigenOS; the *regime* is unchanged — this is still
 not modern hardware — so the discipline stands and only the machine
-changed. `BASELINE.md`'s numbers pre-date the move and need a
-re-capture.) Larger modes can exist but **must be opt-in and named
-clearly** (e.g. `--size 3`, not changing the default). When in doubt,
+changed. `BASELINE.md` was re-captured on the X540NA on 2026-10-12.)
+Larger modes can exist but **must be opt-in and named clearly** (e.g. `--size 3`, not changing the default). When in doubt,
 ship the smaller default and document the larger mode.
 
 ## Hard-won rules
@@ -105,18 +113,34 @@ ship the smaller default and document the larger mode.
 
 ## Current state
 
-12 workloads, smoke green at default size. Latest addition: **`cross`**
+12 smoke workloads plus `cross-tape`, green at default size. **`cross`**
 — the lab that crosses axes instead of adding one. The other 11 each
 stress a single axis (concurrent = spawn, observer = observe, io =
 buffers), which is not a gauntlet; `cross` is the combinations nobody
 has a reason to write. It found two BLOCKERs on its first run
 (EigenScript#642, #633 — see `GAPS.md`), which is the argument for it.
+The 2026-10 crossings add the v0.46.0-era surfaces: errors inside
+`unobserved:` × tasks (EigenScript#1735, fixed after the v0.46.0 cut; see `GAPS.md`),
+null/bool singletons in a JIT-hot observed loop (#1729: smoke size cannot
+reach the 1M refcount margin; `--suite soak` on a pre-fix build, 6e7b3978,
+aborts in that crossing with `free(): invalid pointer`), numbers in container slots × tasks, bools × JSON, and
+the tape × tasks crossing.
+
+**Known gaps.** A crossing that sees a bug the pinned release still has calls
+`known_gap` (`src/common.eigs`): it prints `KNOWN-GAP` and passes only when
+the binary reports exactly the version the gap was observed on, so the waiver
+expires by itself at the next pin bump; `--strict-gaps` makes it fail. A
+failed waiver is recorded and the run continues, so later crossings still run;
+the run then exits nonzero listing every failure. The waiver keys only on
+`--version`: a main build that reports the pinned version but has lost the
+upstream fix passes silently until the pin moves.
 
 **Why this repo and not upstream's suite:** EigenScript CI is ~33 min of
 COMPUTE per PR across 17 legs — ~10 min wall, since the legs run in
 parallel behind one 8m36s ASan leg. Coverage added upstream is paid on
 every PR forever and lands behind that gate; the same coverage here
-costs ~24 s in a repo that only runs on its own changes and pin bumps.
+costs ~40 s of CI wall (39 s on 2026-10-12, most of it building
+EigenScript) in a repo that only runs on its own changes and pin bumps.
 
 But note what this repo can and cannot be: the Gauntlet is pinned to a
 RELEASED tag, so it is **post-release coverage, not a pre-merge gate**.
@@ -124,8 +148,7 @@ It can never replace an upstream leg — a leg moved here would stop
 blocking the PR that breaks it and only surface at the next pin bump.
 The Gauntlet ADDS cheap coverage; it does not subtract upstream cost.
 
-Pinned to v0.46.0-line semantics; `--pkg` integration is available but
-the suite runs without packages.
+`--pkg` integration is available but the suite runs without packages.
 
 ## Gotchas
 
