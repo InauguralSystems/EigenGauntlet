@@ -101,4 +101,5 @@ else:
     print of f"Unknown suite: {suite}"
     assert of [0, "unknown suite"]
 
+gaps_verdict of null
 print of "EigenGauntlet complete"

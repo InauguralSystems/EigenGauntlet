@@ -15,7 +15,9 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
   raises; `8a1e86dd` (#1735) answers `false`. `cross_lab`'s
   `_cross_unobserved_error_reentry` asserts the correct answer and routes the
   pin's answer through `known_gap`, which waives it ONLY when the binary
-  reports `0.46.0`. On the next pin bump the waiver fails by itself if the
+  reports `0.46.0` (it keys ONLY on `--version`, so a main build that reports
+  0.46.0 but has lost the #1735 fix passes silently until the pin moves). A
+  failed waiver is recorded and later crossings still run. On the next pin bump the waiver fails by itself if the
   bug is still there, and is dead code once it is not: delete the
   `known_gap` call then.
 

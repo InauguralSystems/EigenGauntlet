@@ -121,14 +121,19 @@ has a reason to write. It found two BLOCKERs on its first run
 (EigenScript#642, #633 — see `GAPS.md`), which is the argument for it.
 The 2026-10 crossings add the v0.46.0-era surfaces: errors inside
 `unobserved:` × tasks (EigenScript#1735, fixed after the v0.46.0 cut; see `GAPS.md`),
-null/bool singletons in a JIT-hot observed loop (#1729, reachable only at
-`--suite soak` size), numbers in container slots × tasks, bools × JSON, and
+null/bool singletons in a JIT-hot observed loop (#1729: smoke size cannot
+reach the 1M refcount margin; `--suite soak` on a pre-fix build, 6e7b3978,
+aborts in that crossing with `free(): invalid pointer`), numbers in container slots × tasks, bools × JSON, and
 the tape × tasks crossing.
 
 **Known gaps.** A crossing that sees a bug the pinned release still has calls
 `known_gap` (`src/common.eigs`): it prints `KNOWN-GAP` and passes only when
 the binary reports exactly the version the gap was observed on, so the waiver
-expires by itself at the next pin bump; `--strict-gaps` makes it fail.
+expires by itself at the next pin bump; `--strict-gaps` makes it fail. A
+failed waiver is recorded and the run continues, so later crossings still run;
+the run then exits nonzero listing every failure. The waiver keys only on
+`--version`: a main build that reports the pinned version but has lost the
+upstream fix passes silently until the pin moves.
 
 **Why this repo and not upstream's suite:** EigenScript CI is ~33 min of
 COMPUTE per PR across 17 legs — ~10 min wall, since the legs run in
