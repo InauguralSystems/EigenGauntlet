@@ -1,0 +1,102 @@
+{
+  "status": "BLOCKED",
+  "blockers": [
+    "The required 804978618-byte source cannot be scanned without violating the no-whole-file-over-200MB rule; ID lists are therefore not frozen."
+  ],
+  "source": {
+    "url": "https://github.com/ccz181078/Coq-BB5/releases/download/v1.0.0/BB5_verified_enumeration_augmented.csv.zst",
+    "sha256": "2be2101b18b80a458bf85814ee361aa4f4e8d0d45a719cccda9756a65cd0685a",
+    "size": 804978618,
+    "bytes_read": [
+      {
+        "offset_start": 0,
+        "offset_end": 8388607,
+        "sha256": "841e6a7b8634c00e84e8f8472d9245eaa78b0267d4121d2c5c2c98ddccb4f3d9"
+      }
+    ],
+    "format": "zstd-compressed ASCII CSV: machine,status,decider,sigma,space,steps,machine_with_halt_transition",
+    "spec": "https://github.com/ccz181078/Coq-BB5/blob/b295161e830cfb0698e6eff667afce8917ca1423/CoqBB5/BB5/README.md"
+  },
+  "source_readme": {
+    "url": "https://github.com/ccz181078/Coq-BB5/releases/download/v1.0.0/README.md",
+    "sha256": "ced5ad470f7f66b33b665f4f77f658ca8696b73a0d54d427ae07578c5aa5ba17",
+    "bytes": 3548
+  },
+  "samples": {
+    "rng": "numpy.random.default_rng",
+    "seed": 50,
+    "replace": false,
+    "canonical_order": true,
+    "halting_uniform": 5000,
+    "halting_steps_ge_1000": 5000,
+    "loops_nonhalting": 10000,
+    "ngramcps_nonhalting": 1000,
+    "id_lists": null,
+    "id_list_sha256": null
+  },
+  "coq_bb5": {
+    "commit": "b295161e830cfb0698e6eff667afce8917ca1423",
+    "budget_source": "CoqBB5/BB5/BB5_Deciders_Hardcoded.v:56",
+    "generic_budget_source": "CoqBB5/BB5/BB5_Deciders_Pipeline.v:38,46"
+  },
+  "eigenscript": {
+    "tag": "v0.46.0",
+    "sha": "4a3a5c1941568e9bc562c7c8221cff22dc8ba697",
+    "constants_source": "src/eigenscript.h:609-626",
+    "defaults_source": "src/state.c:52-57",
+    "after_1758_round3": "FOLLOW_UP"
+  },
+  "signature": {
+    "fields": [
+      "state",
+      "head_minus_visited_left",
+      "window_hash"
+    ],
+    "window": "inclusive min..max ever visited",
+    "serialization": "one byte per cell, 0x00 or 0x01, left-to-right",
+    "hash": "FNV-1a-64",
+    "offset_basis": "14695981039346656037",
+    "prime": "1099511628211",
+    "plant_mask": "0x0f"
+  },
+  "claim": {
+    "read": "after every executed transition",
+    "first_wins": true,
+    "cycler": "converged(signature_hash) OR stable(signature_hash)",
+    "translated_cycler": "otherwise oscillating(head_offset)",
+    "setters": false
+  },
+  "champion": {
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA",
+    "initial": "blank 0 tape; state A; head 0",
+    "transitions": 47176870,
+    "ones": 4098,
+    "partial_defined_transitions": 47176869,
+    "partial_pre_lookup_ones": 4097
+  },
+  "antihydra": {
+    "machine": "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA",
+    "source": "https://wiki.bbchallenge.org/wiki/Antihydra",
+    "transitions": 100000000
+  },
+  "baseline": {
+    "repository": "https://github.com/bbchallenge/bbchallenge-deciders",
+    "commit": "abcf5375c06b9706a3a8e4752c5fd834dd9c47af",
+    "directories": [
+      "decider-cyclers",
+      "decider-translated-cyclers"
+    ]
+  },
+  "ouroboros": {
+    "commit": null,
+    "aot": "WAITING_ON_OUROBOROS_PIN"
+  },
+  "tolerances": {
+    "counts": 0,
+    "trace": "byte-identical",
+    "recall_numerator": 9500,
+    "recall_denominator": 10000,
+    "beat": "observer_median < baseline_median"
+  },
+  "step_budget": 1050000
+}
