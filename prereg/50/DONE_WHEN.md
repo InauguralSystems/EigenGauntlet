@@ -1,44 +1,44 @@
 ## Done when
 
-> **Pre-registration status: BLOCKED (inputs not frozen).** The authoritative augmented file is fetchable only as an 804,978,618-byte object. The mandated “never download a file over 200 MB whole” rule prevents the canonical-order scan required to select records uniformly. No sample IDs or results are invented. The bar below is the frozen replacement specification, but no experiment may be graded until the three missing ID files and their digests are produced by `sample.py` from an independently supplied, digest-matching local copy. See `evidence/bar-rewrite-50/facts.txt`.
+> **Pre-registration status: FROZEN — PILOT FAILED SEPARATION.** The release and four samples are frozen below. The only workload run was the pre-named, disjoint mechanism pilot. It rejected the claim mapping, so **needing explicit cycle detection is the finding** and the 22,050,000,000-transition sample runs must not be run.
 
-### Frozen protocol
+### Frozen graded scope after the pilot
 
-Every graded command is a future builder command with this common contract: it writes canonical JSON to `results/50/<item>.json`, writes no other stdout, and exits 0 exactly when the stated gate passes (2 for malformed/missing inputs and 1 for a failed gate). Each record contains `machine`, oracle class, verdict (`none|cycler|translated_cycler`), and first-claim transition. Counts are integers; rates also include their raw numerator and denominator. The report names the **closest call** for every boundary: false-positive boundary (latest halting machine to escape a claim, or earliest false claim), recall boundary (the missed/claimed machine whose ordered first-claim margin to 1,050,000 is smallest), exact champion counts (signed transition/ones margins), Antihydra (earliest claim or `none` with 100,000,000-step margin), collision plant (earliest false claim or `none`), and parity/median boundaries (symmetric-difference machine and raw median step margin).
+A future harness may run only these graded items. It writes canonical JSON under `results/50/`; no simulator, decider, or graded result is included here.
 
-1. **Soundness.** Population: all 10,000 frozen halting IDs (the union of the two nonoverlapping strata). Oracle: `status=halt` and `steps` in Coq-BB5 augmented v1.0.0. Threshold: zero `cycler` or `translated_cycler` claims through transition 1,050,000. Command: `python prereg/50/run_bar.py soundness --manifest prereg/50/manifest.json`.
-2. **Loops recall.** Population: 10,000 frozen `LOOP1_*`, `nonhalt` IDs. Oracle: Coq-BB5 augmented v1.0.0. Threshold: at least 9,500/10,000 receive either claim by transition 1,050,000. This is observer recall, not the published aggregate Loops coverage. Command: `python prereg/50/run_bar.py recall --manifest prereg/50/manifest.json`.
-3. **Champion and replay.** Population: the single total machine `1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA`, blank all-0 tape, A, head 0. Oracle: independent simulator recorded in facts. Threshold: VM (`EIGS_JIT=0`) and default JIT each execute exactly 47,176,870 transitions and finish with exactly 4,098 ones; `EIGS_TRACE` output and tape SHA-256 must equal the `EIGS_REPLAY` output and tape SHA-256 byte-for-byte. AOT is explicitly `WAITING_ON_OUROBOROS_PIN`: this repository pins none, so it is reported but is not a gate. Command: `python prereg/50/run_bar.py champion --manifest prereg/50/manifest.json`.
-4. **Antihydra abstention.** Population/oracle: the one cited bbchallenge machine `1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA`, blank all-0 tape, A, head 0. Threshold: zero claims of **any** class during 100,000,000 transitions. The JSON also reports (but does not grade) every observer predicate state on the head-extent binding. Command: `python prereg/50/run_bar.py antihydra --manifest prereg/50/manifest.json`.
-5. **Collision plant.** Population: the 10,000 frozen halting IDs. Oracle: Coq-BB5 halting status. Threshold: with only the signature hash masked to its low 4 bits, at least 1/10,000 false nonhalting claim by transition 1,050,000. Command: `python prereg/50/run_bar.py collision --manifest prereg/50/manifest.json`.
-6. **Pinned baseline.** Population: the same frozen halting and Loops samples. Oracle/baseline: `bbchallenge/bbchallenge-deciders` at `abcf5375c06b9706a3a8e4752c5fd834dd9c47af`, `decider-cyclers` plus `decider-translated-cyclers`, capped at 1,050,000 transitions. **Parity** requires identical claimed-machine sets separately on both populations. **Beats** requires parity and observer median first-claim transition strictly below baseline median on the 10,000 Loops machines; both raw medians are printed. Command: `python prereg/50/run_bar.py baseline --manifest prereg/50/manifest.json`.
-7. **NGramCPS specificity report.** Population: 1,000 frozen `NGRAM_CPS_*`, `nonhalt` IDs. Oracle: Coq-BB5 augmented v1.0.0. Threshold: zero false class labels (only `none`, `cycler`, or `translated_cycler` are legal); claim rate has no pass threshold and is printed as a raw fraction. Command: `python prereg/50/run_bar.py ngramcps --manifest prereg/50/manifest.json`.
+1. **Champion and replay.** Run total machine `1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA` on a blank tape with the **plain simulator: no signature and no observer**. Both VM (`EIGS_JIT_OFF=1`) and default JIT must execute exactly 47,176,870 transitions, finish with 4,098 ones, and produce byte-identical trace/replay output and tape SHA-256. Each arm must also set `EIGS_JIT_STATS=1`: the VM arm must report `compiled=0`, and the JIT arm must report `compiled>0`. v0.46.0 reads the switch at `src/jit.c:4487-4495` and prints those counters at `src/jit.c:310-314`; the verbatim source and demonstrated 0/1 tier output are in `evidence/bar-rewrite-50-fix/`.
+2. **Antihydra abstention.** Machine `1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA`, blank tape, must receive no claim of any class through 100,000,000 transitions. Report every observer predicate on both signature bindings, without grading those states.
+3. **Mechanism pilot table.** Preserve the already-run checkpoint table and the rejection decision byte-for-byte. This is evidence, not a rerunnable graded sample.
 
-`run_bar.py` is deliberately not part of this pre-registration: implementing it would be the forbidden simulator/decider/harness workload.
+AOT remains `WAITING_ON_OUROBOROS_PIN`. The former soundness, recall, collision, baseline, and NGramCPS sample items are removed from the graded scope by the pre-registered pilot branch; the frozen lists remain artifacts and must not be executed.
 
-### Settings
+### Source and frozen samples
 
 | Setting | Frozen value |
 |---|---|
-| Release / record format | Coq-BB5 v1.0.0 augmented CSV: ASCII header `machine,status,decider,sigma,space,steps,machine_with_halt_transition`; standard bbchallenge text machines |
-| Release object | GitHub asset URL and SHA-256 in manifest; 804,978,618-byte zstd file; only bytes 0–8,388,607 were read |
-| Sampling | canonical CSV order; one `numpy.random.default_rng(50)`; draws in order uniform halt 5,000, long halt 5,000 excluding the first stratum, Loops 10,000, NGramCPS 1,000; all without replacement |
-| Eligibility | exact `halt`; long has integer `steps >= 1000`; Loops is `nonhalt` and `decider.startswith("LOOP1_")`; NGramCPS likewise `NGRAM_CPS_` |
-| Category overlap | status separates halters; the proof pipeline assigns one deciding method per row, so method categories are disjoint; second halt stratum explicitly excludes first |
-| Budget | 1,050,000 transitions, the largest Loops step bound used by the pinned proof (`loop1_decider 1050000`); the generic passes use 130 and 4,100. |
-| Signature | `(state ASCII A..F/Z, signed head-left offset, FNV-1a-64(window bytes))`; window is every cell from minimum through maximum position ever visited, inclusive; cells serialize left-to-right as one byte `0x00`/`0x01`; offset is mathematical signed integer, not hashed |
-| Hash | FNV-1a 64: offset basis `14695981039346656037`, multiply `1099511628211` modulo 2^64; plant masks `hash & 0x0f` |
-| Observation/read | after each executed transition, after write/move/state update; assign the unsigned hash as an exactly represented hexadecimal string binding and assign offset to a numeric binding; first claim wins |
-| Claim mapping | `cycler` iff `converged of signature_hash` or `stable of signature_hash`; `translated_cycler` iff neither fired and `oscillating of head_offset`; no other predicate claims. This uses named predicates and default constants, with no setters or experiment constants in the claim path. |
-| EigenScript before | tag v0.46.0, commit `4a3a5c1941568e9bc562c7c8221cff22dc8ba697`; window 10, min/max 4/64, `dh_zero=.001`, `dh_small=.01`, `h_low=.1`, scale `.001` |
-| After sequencing | EigenScript#1758 round 3 is follow-up only, outside this Done-when |
-| Champion convention | total `1RZ`; 47,176,870 executed transitions; 4,098 final ones. Partial `---` executes 47,176,869 defined transitions, then looks up undefined E0 with 4,097 ones. |
-| Antihydra | `1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA`; 100,000,000 transitions |
-| Trace tolerance | none: `cmp` equality plus identical SHA-256 |
-| Count/rate tolerance | exact integer comparisons; recall inclusive `>= 9500`; beat strictly `<`; medians are ordinary average of the two center order statistics |
-| VM/JIT/AOT | VM `EIGS_JIT=0`; JIT default; AOT waiting because no ouroboros commit is pinned here |
-| Compute lane | local measured probe: observer off 11.14M iterations/s, on 6.05M/s. Champion ≈7.80 s observed / 4.24 s off; Antihydra ≈16.52 s observed; 21,000 sampled machines × 1,050,000 = 22,050,000,000 transitions ≈60.74 observed minutes before baseline, so samples require an off-box lane. |
+| Release | Coq-BB5 augmented v1.0.0, 804,978,618-byte zstd object at the manifest URL |
+| Integrity | Full SHA-256 `2be2101b18b80a458bf85814ee361aa4f4e8d0d45a719cccda9756a65cd0685a`; computed locally over the complete object and equal to the digest already published in the first-round manifest (whose provenance was the GitHub release metadata) |
+| Scan | `sample.py` makes exactly two `zstd -dc` streaming passes and never stores the decompressed CSV. Pass 1 counts eligibility; pass 2 selects rows at ascending sampled indices. |
+| RNG | One `numpy.random.default_rng(50)`; `choice(..., replace=False)` in order: 5,000 uniform halters, requested 5,000 `steps >= 1000` halters after excluding the first draw; the eligible population is only 503, so the frozen stratum is its complete census, 10,000 `LOOP1_*` nonhalters, 1,000 `NGRAM_CPS_*` nonhalters |
+| Lists | `halting-uniform.txt`, `halting-ge-1000.txt`, `loop1-nonhalt.txt`, `ngram-cps-nonhalt.txt`; counts (5,000 / 503 / 10,000 / 1,000), eligible-population counts, distributions, and SHA-256 values are in the manifest and streaming-pass evidence |
+| Ordering | Canonical CSV order; sampled indices sorted ascending before records are written |
 
-### Blocking condition
+### Signature and observation
 
-The sample freeze is blocked as stated above. No before/after workload SHAs exist because implementation is expressly out of scope.
+Let `p = 2^61 - 1` and base `b = 1815673109382999696`, drawn once as `default_rng(50).integers(2, p-1)`. For visited interval `[left,right]`, the hash is
+
+`H = sum(cell[pos] * b^(pos-left), pos=left..right) mod p`.
+
+A write updates it in O(1) with `(new-old)*b^(pos-left)`. Extending left re-bases in O(1) as `H := b*H + new_left_cell`; extending right only grows the cached power table (amortized O(1)). The collision plant, if retained as an ungraded diagnostic, masks `H & 0x0f`. The other signature fields remain state and signed `head-left`. Read after write/move/state update; bind the hash as fixed 16-digit hexadecimal text and the offset as a number.
+
+The original mapping was `cycler` iff `converged(signature_hash) OR stable(signature_hash)`, otherwise `translated_cycler` iff `oscillating(head_offset)`. It is now frozen **as rejected**, not as a graded classifier. At v0.46.0, `observer_slot_update` sends only numeric values to the value trajectory and nonnumeric values fall back to entropy (`src/eigenscript.c:769-793`); strings use character Shannon entropy (`src/eigenscript.c:388-440`). Thus random hex identities have similar entropy even when configurations differ. Likewise, head-offset oscillation detects ordinary sweeps, including halting sweeps.
+
+### Pre-named pilot and decision rule
+
+Before it ran, the pilot named 11 entries in `evidence/bar-rewrite-50-fix/pilot-classes.txt`: three explicit period-2 cyclers, three explicit one-cell translated cyclers, three totalized terminal variants sharing the champion's >1,000-step sweeping prefix, the champion's first 1,000,000 transitions, and Antihydra's first 1,000,000. The constructed machines are absent from all frozen IDs. Classes come from direct transition-table proofs, the Coq-BB5 champion record, and the cited bbchallenge Antihydra page as detailed there.
+
+At 10^3, 10^4, 10^5, and 10^6 the pilot recorded all six predicates (`converged`, `stable`, `improving`, `oscillating`, `diverging`, `equilibrium`) on both bindings. It failed separation: every sweeping halter already had `stable(signature_hash)=true` at 10^3, while translated-2 had no mapped predicate at any checkpoint. No better observer-only mapping is proposed. Therefore the mapping is rejected and no sample workload may run.
+
+### Compute lanes
+
+The real probe executes the champion's first 1,000,000 TM transitions, O(1) polynomial update, hexadecimal string-entropy assignment, and numeric offset assignment. Its measured rate and all derived seconds are verbatim in `real-compute-probe.txt`. The sample lane is `22,050,000,000 / measured_rate`; Antihydra is `100,000,000 / measured_rate`; and an observed champion would be `47,176,870 / measured_rate`. The actual champion lane is separately priced from a plain 1,000,000-transition probe because its frozen command has no signature/observer. These are single-process wall-clock estimates with no unmeasured numeric-update proxy.
