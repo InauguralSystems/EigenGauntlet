@@ -1,0 +1,915 @@
+[
+  {
+    "name": "short-cycle-1",
+    "class": "short-period cycler",
+    "machine": "0RB0RB_0LA0LA_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "short-cycle-2",
+    "class": "short-period cycler",
+    "machine": "1RB1RB_1LA1LA_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "short-cycle-3",
+    "class": "short-period cycler",
+    "machine": "0RB1RB_0LA1LA_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "translated-1",
+    "class": "translated cycler",
+    "machine": "0RA0RA_---0LA_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "translated-2",
+    "class": "translated cycler",
+    "machine": "1RA1RA_---0LA_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": true,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "translated-3",
+    "class": "translated cycler",
+    "machine": "0RB0RB_0RB0RB_---0LA_---0LA_---0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": true,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "sweeping-halter-1",
+    "class": "halter sweeping >=1000 steps",
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_0LZ0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "sweeping-halter-2",
+    "class": "halter sweeping >=1000 steps",
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1LZ0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "sweeping-halter-3",
+    "class": "halter sweeping >=1000 steps",
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_0RZ0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "champion-prefix",
+    "class": "champion first 1000000",
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  },
+  {
+    "name": "antihydra-prefix",
+    "class": "Antihydra first 1000000",
+    "machine": "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA",
+    "checkpoints": [
+      {
+        "checkpoint": 1000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 10000,
+        "signature_hash": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 100000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      },
+      {
+        "checkpoint": 1000000,
+        "signature_hash": {
+          "converged": false,
+          "stable": true,
+          "improving": false,
+          "oscillating": false,
+          "diverging": false,
+          "equilibrium": true
+        },
+        "head_offset": {
+          "converged": false,
+          "stable": false,
+          "improving": false,
+          "oscillating": false,
+          "diverging": true,
+          "equilibrium": false
+        }
+      }
+    ]
+  }
+]

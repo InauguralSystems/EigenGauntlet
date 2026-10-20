@@ -1,0 +1,27 @@
+Pilot machine classes (pre-named before execution)
+===================================================
+short-cycle-1..3 and translated-1..3 are deliberately constructed witnesses. Their transition tables are frozen in pilot-table.json. Direct simulation proves short-cycle configurations repeat with period 2 after tape initialization and translated configurations repeat modulo a one-cell right translation. The simulation command and all checkpoint states are in pilot-table.json.
+sweeping-halter-1..3 differ from the BB(5) champion only in the terminal E0 instruction's write/direction; all share its first 47,176,869 defined transitions, including its >1,000-step back-and-forth sweeps, then take their stated total halting instruction. Champion identity/count source: https://wiki.bbchallenge.org/wiki/BB%285%29_champion .
+champion-prefix uses that cited champion's first 1,000,000 transitions.
+Antihydra identity/class source: https://wiki.bbchallenge.org/wiki/Antihydra .
+Disjointness: none of the six constructed nonhalters nor the three total-Z halters occurs in any frozen Coq-BB5 ID file (the release IDs use partial --- halting notation); explicit check recorded below.
+[
+{"name":"short-cycle-1","kind":"short-period cycler","machine":"0RB0RB_0LA0LA_---0LA_---0LA_---0LA"},
+{"name":"short-cycle-2","kind":"short-period cycler","machine":"1RB1RB_1LA1LA_---0LA_---0LA_---0LA"},
+{"name":"short-cycle-3","kind":"short-period cycler","machine":"0RB1RB_0LA1LA_---0LA_---0LA_---0LA"},
+{"name":"translated-1","kind":"translated cycler","machine":"0RA0RA_---0LA_---0LA_---0LA_---0LA"},
+{"name":"translated-2","kind":"translated cycler","machine":"1RA1RA_---0LA_---0LA_---0LA_---0LA"},
+{"name":"translated-3","kind":"translated cycler","machine":"0RB0RB_0RB0RB_---0LA_---0LA_---0LA"},
+{"name":"sweeping-halter-1","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_0LZ0LA"},
+{"name":"sweeping-halter-2","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_1LZ0LA"},
+{"name":"sweeping-halter-3","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_0RZ0LA"},
+{"name":"champion-prefix","kind":"champion first 1000000","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA"},
+{"name":"antihydra-prefix","kind":"Antihydra first 1000000","machine":"1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA"}
+]
+
+$ for f in prereg/50/*.txt; do ...; done
+$ grep -Fxf pilot-machine-list each-frozen-ID-file | wc -l
+prereg/50/halting-ge-1000.txt: 0
+prereg/50/halting-uniform.txt: 0
+prereg/50/loop1-nonhalt.txt: 0
+prereg/50/ngram-cps-nonhalt.txt: 0

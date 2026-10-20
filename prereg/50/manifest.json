@@ -1,0 +1,188 @@
+{
+  "status": "FROZEN_PILOT_FAILED_SEPARATION",
+  "source": {
+    "url": "https://github.com/ccz181078/Coq-BB5/releases/download/v1.0.0/BB5_verified_enumeration_augmented.csv.zst",
+    "sha256": "2be2101b18b80a458bf85814ee361aa4f4e8d0d45a719cccda9756a65cd0685a",
+    "size": 804978618,
+    "bytes_read": "complete object (804978618 bytes)",
+    "format": "zstd-compressed ASCII CSV: machine,status,decider,sigma,space,steps,machine_with_halt_transition",
+    "spec": "https://github.com/ccz181078/Coq-BB5/blob/b295161e830cfb0698e6eff667afce8917ca1423/CoqBB5/BB5/README.md",
+    "digest_provenance": "GitHub Releases API asset digest field for v1.0.0; independently recomputed over the complete downloaded object"
+  },
+  "source_readme": {
+    "url": "https://github.com/ccz181078/Coq-BB5/releases/download/v1.0.0/README.md",
+    "sha256": "ced5ad470f7f66b33b665f4f77f658ca8696b73a0d54d427ae07578c5aa5ba17",
+    "bytes": 3548
+  },
+  "samples": {
+    "rng": "numpy.random.default_rng",
+    "seed": 50,
+    "replace": false,
+    "canonical_order": true,
+    "halting_uniform": 5000,
+    "halting_steps_ge_1000": 503,
+    "loops_nonhalting": 10000,
+    "ngramcps_nonhalting": 1000,
+    "id_lists": [
+      "halting-uniform.txt",
+      "halting-ge-1000.txt",
+      "loop1-nonhalt.txt",
+      "ngram-cps-nonhalt.txt"
+    ],
+    "id_list_sha256": {
+      "halting-ge-1000.txt": "a245827bfc56f3292b206e34031dcc952dd0c38d1730e25ade0c158ebca5b13e",
+      "halting-uniform.txt": "57b2acd83851daa62ea656a56381427651c33538cef8dbc9c1002333a383f8af",
+      "loop1-nonhalt.txt": "c23b9a16b11d7296beff2f74fbb4b4556e788e1b136798603a881bd10c2da290",
+      "ngram-cps-nonhalt.txt": "c18712d19540705e9ec7fd1f5b8e59dd0e83182d60cc340865f445f86a7e965f"
+    },
+    "passes": 2,
+    "decompress_command": "zstd -dc",
+    "requested_halting_steps_ge_1000": 5000,
+    "long_stratum_census_note": "Only 503 eligible rows exist; froze the complete disjoint census because choice without replacement cannot draw 5000.",
+    "eligible_counts": {
+      "halting": 48379894,
+      "halting_steps_ge_1000": 503,
+      "loop1_nonhalting": 126994097,
+      "ngram_cps_nonhalting": 6003729
+    },
+    "disjoint_long_eligible_count": 503,
+    "selected_counts": {
+      "halting-ge-1000.txt": 503,
+      "halting-uniform.txt": 5000,
+      "loop1-nonhalt.txt": 10000,
+      "ngram-cps-nonhalt.txt": 1000
+    },
+    "draw_indices_sha256": {
+      "halting_ge_1000": "84af8be384f552c1e23c154f76fb08baa9dd5e298190d281b98e1071892d8ac9",
+      "halting_uniform": "b8efe9b672705be82a3c5196432c1baa46abc14c747ba4b879946200365d5176",
+      "loop1_nonhalt": "dc44e075fab03754b5bd4b1cc7569cca69a5908cf9f16e3355f8871548f4a69c",
+      "ngram_cps_nonhalt": "86c1c3676e2c4ff1c06e4fef247a05cd3a7781efc5e626b62cf31d18fc3cadb6"
+    },
+    "halting_time_distributions": {
+      "uniform": {
+        "max": 113.0,
+        "median": 15.0,
+        "min": 7.0,
+        "p25": 13.0,
+        "p75": 19.0,
+        "p90": 24.0,
+        "p99": 45.01000000000022
+      },
+      "steps_ge_1000": {
+        "max": 47176870.0,
+        "median": 3187.0,
+        "min": 1000.0,
+        "p25": 1600.0,
+        "p75": 5698.5,
+        "p90": 21034.4,
+        "p99": 11814995.28
+      }
+    }
+  },
+  "coq_bb5": {
+    "commit": "b295161e830cfb0698e6eff667afce8917ca1423",
+    "budget_source": "CoqBB5/BB5/BB5_Deciders_Hardcoded.v:56",
+    "generic_budget_source": "CoqBB5/BB5/BB5_Deciders_Pipeline.v:38,46"
+  },
+  "eigenscript": {
+    "tag": "v0.46.0",
+    "sha": "4a3a5c1941568e9bc562c7c8221cff22dc8ba697",
+    "constants_source": "src/eigenscript.h:609-626",
+    "defaults_source": "src/state.c:52-57",
+    "after_1758_round3": "FOLLOW_UP",
+    "vm_switch": "EIGS_JIT_OFF=1",
+    "vm_switch_source": "src/jit.c:4487-4495",
+    "tier_proof": "EIGS_JIT_STATS=1; src/jit.c:310-314; require compiled=0 VM and compiled>0 JIT",
+    "string_channel_source": "src/eigenscript.c:388-440,769-793"
+  },
+  "signature": {
+    "fields": [
+      "state",
+      "head_minus_visited_left",
+      "window_hash"
+    ],
+    "window": "inclusive min..max ever visited",
+    "modulus": "2305843009213693951",
+    "base": "1815673109382999696",
+    "base_draw": "numpy.random.default_rng(50).integers(2, p-1)",
+    "polynomial": "sum(cell[pos] * base**(pos-left)) mod p",
+    "write_update": "(new-old) * base**(pos-left) mod p",
+    "left_rebase": "H = base*H + new_left_cell mod p",
+    "plant_mask": "0x0f",
+    "complexity": "O(1) per update; cached powers amortized O(1)"
+  },
+  "claim": {
+    "read": "after every executed transition",
+    "first_wins": true,
+    "cycler": "converged(signature_hash) OR stable(signature_hash)",
+    "translated_cycler": "otherwise oscillating(head_offset)",
+    "setters": false,
+    "status": "REJECTED_BY_PILOT",
+    "reason": "false stable(signature_hash) on sweeping halters and missed translated cycler",
+    "graded_sample_runs": false
+  },
+  "champion": {
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA",
+    "initial": "blank 0 tape; state A; head 0",
+    "transitions": 47176870,
+    "ones": 4098,
+    "partial_defined_transitions": 47176869,
+    "partial_pre_lookup_ones": 4097
+  },
+  "antihydra": {
+    "machine": "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA",
+    "source": "https://wiki.bbchallenge.org/wiki/Antihydra",
+    "transitions": 100000000
+  },
+  "baseline": {
+    "repository": "https://github.com/bbchallenge/bbchallenge-deciders",
+    "commit": "abcf5375c06b9706a3a8e4752c5fd834dd9c47af",
+    "directories": [
+      "decider-cyclers",
+      "decider-translated-cyclers"
+    ]
+  },
+  "ouroboros": {
+    "commit": null,
+    "aot": "WAITING_ON_OUROBOROS_PIN"
+  },
+  "tolerances": {
+    "counts": 0,
+    "trace": "byte-identical",
+    "recall_numerator": 9500,
+    "recall_denominator": 10000,
+    "beat": "observer_median < baseline_median"
+  },
+  "step_budget": 1050000,
+  "pilot": {
+    "size": 11,
+    "checkpoints": [
+      1000,
+      10000,
+      100000,
+      1000000
+    ],
+    "classes": {
+      "short_period_cyclers": 3,
+      "translated_cyclers": 3,
+      "sweeping_halters": 3,
+      "champion_prefix": 1,
+      "antihydra_prefix": 1
+    },
+    "table": "prereg/50/evidence/bar-rewrite-50-fix/pilot-table.json",
+    "decision": "REJECT_MAPPING_NO_REPLACEMENT",
+    "finding": "needing explicit cycle detection is the finding",
+    "graded_scope": [
+      "champion",
+      "antihydra_abstention",
+      "pilot_table"
+    ]
+  },
+  "compute": {
+    "probe_transitions": 1000000,
+    "work": "champion transitions + polynomial signature + string entropy assignment + numeric observer assignment",
+    "evidence": "prereg/50/evidence/bar-rewrite-50-fix/real-compute-probe.txt",
+    "champion_mode": "plain simulator, no signature, no observer",
+    "rates": "see verbatim evidence"
+  }
+}

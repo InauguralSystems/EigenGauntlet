@@ -1,0 +1,170 @@
+$ git -C eigenscript show 4a3a5c19:src/jit.c (selected lines)
+   305	    jit_thread_destroy(eigs_current);
+   306	}
+   307	
+   308	void jit_thread_destroy(EigsThread *th) {
+   309	    if (!th) return;
+   310	    if (eigs_env_flag("EIGS_JIT_STATS")) {
+   311	        fprintf(stderr, "[jit] scanned=%d compiled=%d cache_used=%zu cache_full_rejects=%d\n",
+   312	                g_jit_scanned_chunks, g_jit_compiled_chunks,
+   313	                g_jit_cache ? jit_cache_used(g_jit_cache) : 0,
+   314	                g_jit_cache_full_rejects);
+   315	    }
+   316	    if (eigs_env_flag("EIGS_JIT_STOPS")) {
+   317	        uint32_t total_stops = 0;
+   318	        for (int i = 0; i < 256; i++) total_stops += g_jit_stop_counts[i];
+  4482	     * issue is diagnosed. */
+  4483	    chunk->jit_state = 1;
+  4484	    chunk->jit_code = NULL;
+  4485	    return;
+  4486	#endif
+  4487	    /* EIGS_JIT_OFF: hard-disable native compilation. Useful for bisecting
+  4488	     * suspected JIT bugs against the interpreter. */
+  4489	    if (eigs_env_flag("EIGS_JIT_OFF")) {
+  4490	        chunk->jit_state = 1;
+  4491	        chunk->jit_code = NULL;
+  4492	        return;
+  4493	    }
+  4494	    jit_register_chunk(chunk);
+  4495	    if (chunk->exec_count   < (uint64_t)g_entry_threshold &&
+  4496	        chunk->back_edge_count < (uint32_t)g_iter_threshold) return;
+  4497	    jit_compile_to_thunk(chunk, 0,
+  4498	                         (int)offsetof(struct EigsChunk, jit_advance),
+$ git -C eigenscript show 4a3a5c19:src/eigenscript.c (selected lines)
+   382	
+   383	/* Shannon entropy over a NUL-terminated byte string (256-bin frequency count).
+   384	 * Shared by VAL_STR and VAL_JSON_RAW: both hold `data.str`, so the same bytes
+   385	 * must measure the same either way. VAL_JSON_RAW used to return a flat 0.0 —
+   386	 * a document could grow without bound and the observer still reported it as
+   387	 * `equilibrium` with dH exactly 0 forever. */
+   388	static double entropy_of_cstr(const char *sp) {
+   389	    if (!sp || !sp[0]) return 0.0;
+   390	    int freq[256] = {0};
+   391	    int len = 0;
+   392	    for (const char *c = sp; *c; c++) { freq[(unsigned char)*c]++; len++; }
+   393	    if (len == 0) return 0.0;
+   394	    double h = 0.0;
+   395	    for (int i = 0; i < 256; i++) {
+   396	        if (freq[i] > 0) { double p = (double)freq[i] / len; h -= p * log2(p); }
+   397	    }
+   398	    return h;
+   399	}
+   400	
+   401	static double compute_entropy_impl(Value *v);
+   402	
+   403	/* A container child contributes only its own size term: the walk STOPS at a
+   404	 * reference. This is the rule VAL_BUFFER and VAL_TEXT_BUILDER have always
+   405	 * used — they hold raw bytes/doubles, so there were never child Values to
+   406	 * recurse into — and #685 extends it to the two types that could. A dict
+   407	 * holding a 5-element list now measures exactly as one holding a 5-element
+   408	 * buffer.
+   409	 *
+   410	 * Consequences, all of them the point:
+   411	 *  - cost is O(own size), never O(reachable), so a short-lived binding that
+   412	 *    references a large structure is no longer quadratic (#685: 4.93s -> 0.06s
+   413	 *    at N=8000, and linear rather than merely faster);
+   414	 *  - cycles and shared substructure are STRUCTURALLY unreachable rather than
+   415	 *    defended against, which is why #571's visited set and the depth-64 cap
+   416	 *    are gone rather than ported;
+   417	 *  - the promise shrinks to one the runtime can keep. Deep semantics claimed a
+   418	 *    container's entropy reflected everything it reached, but nothing
+   419	 *    re-observed a binding when a referenced structure was mutated, so that
+   420	 *    claim was already broken on the first in-place write (measured: 6.2M
+   421	 *    mutations onto already-summarized values per fleet run). */
+   422	static double ent_child(Value *c) {
+   423	    if (c && (c->type == VAL_LIST || c->type == VAL_DICT)) {
+   424	        int n = (c->type == VAL_LIST) ? c->data.list.count : c->data.dict.count;
+   425	        return log2((double)n + 1.0);
+   426	    }
+   427	    return compute_entropy_impl(c);
+   428	}
+   429	
+   430	static double ent_child_slot(EigsSlot s) {
+   431	    if (slot_is_num(s)) return entropy_of_num(SLOT_NUM_RAW(s));
+   432	    return ent_child(eigs_slot_ref(s));
+   433	}
+   434	
+   435	static double compute_entropy_impl(Value *v) {
+   436	    if (!v) return 0.0;
+   437	    switch (v->type) {
+   438	        case VAL_NULL: return 0.0;
+   439	        case VAL_NUM: return entropy_of_num(VAL_NUM_RAW(v));
+   440	        case VAL_STR:      return entropy_of_cstr(v->data.str);
+   441	        case VAL_JSON_RAW: return entropy_of_cstr(v->data.str);
+   442	        case VAL_LIST: {
+   443	            if (v->data.list.count == 0) return 0.0;
+   444	            double sum = 0.0;
+   445	            for (int i = 0; i < v->data.list.count; i++)
+   769	void observer_slot_update(Env *e, int idx, Value *newval) {
+   770	    eigs_obs_count_call();   /* #972: before the gate test, by design */
+   771	    /* #915: nothing compiled into this state can interrogate the observer, so
+   772	     * skip the entropy walk entirely. compute_entropy recurses through every
+   773	     * reachable list item and dict value, which is where the 88% goes.
+   774	     *
+   775	     * `obs_needed` is monotonic — set at compile time by chunk_reads_observer,
+   776	     * and by eigs_obs_enable_runtime() at runtime, never cleared within a unit. The
+   777	     * OTHER half of eigs_obs_gate_open(), the trace-history flag, is NOT:
+   778	     * `record_history of 0` calls trace_history_disable() and closes it again
+   779	     * mid-program. A previous version of this comment claimed the gate "cannot
+   780	     * flicker mid-loop"; that is true of obs_needed and false of the pair, and
+   781	     * a critic executed the flicker. `record_history` is now in OBS_BUILTINS so
+   782	     * a program that names it opens the gate at COMPILE time and the flicker
+   783	     * cannot change an answer. */
+   784	    if (!eigs_obs_gate_open()) return;
+   785	    observer_slot_update_e(e, idx, compute_entropy(newval));
+   786	    /* #294 also fold the raw value into the value-signal channel (numbers only:
+   787	     * the relative-delta step is only defined for a scalar trajectory). */
+   788	    if (newval && newval->type == VAL_NUM) {
+   789	        ObserverSlot *s = env_obs_slot(e, idx);
+   790	        if (s) observer_slot_record_value(s, VAL_NUM_RAW(newval));
+   791	    } else {
+   792	        /* #861: a non-numeric assignment ends the numeric trajectory's claim
+   793	         * on this binding — predicates fall back to the entropy channel until
+   794	         * a number is assigned again (the recorded windows are kept, matching
+   795	         * report_value's documented history semantics). */
+  1170	 * partial-window fallback preserved verbatim. */
+  1171	static const char *obs_num_report(const ObserverSlot *s) {
+  1172	    if (!s || !s->v_used) return "equilibrium";   /* no numeric trajectory */
+  1173	    size_t cnt = obs_v_count(s);
+  1174	    if (cnt == 0) return "equilibrium";           /* one value seen, no step yet */
+  1175	    if (obs_num_oscillating(s)) return "oscillating";
+  1176	    if (obs_num_diverging(s))   return "diverging";
+  1177	    if (obs_num_improving(s))   return "improving";   /* partial-capable, like
+  1178	                                                       * the two bands above */
+  1179	    if (cnt >= (size_t)observer_slot_window(s)) {
+  1180	        if (obs_num_converged(s))   return "converged";
+  1181	        if (obs_num_equilibrium(s)) return "equilibrium";
+  1182	        if (obs_num_stable(s))      return "stable";
+  1183	        return "moving";
+  1184	    }
+  1185	    int all_zero, all_small;
+  1186	    obs_num_flags(s, &all_zero, &all_small);
+  1187	    (void)all_zero;
+  1188	    if (all_small) return "stable";
+  1189	    return "moving";
+  1190	}
+  1191	
+  1192	/* Route: value channel iff the most recent observed assignment was numeric. */
+  1193	static int obs_route_num(const ObserverSlot *s) {
+  1194	    return s && s->v_used && s->v_last;
+  1195	}
+  1196	
+  1197	/* Public predicates: dispatch numeric bindings to the value-channel family
+  1198	 * above (#861); everything else keeps the entropy classifiers below. The
+  1199	 * saturation gates that #889 put on the entropy bodies are gone — a live
+  1200	 * numeric binding always routes to the value channel, where the family
+  1201	 * handles saturation itself, so the entropy route can no longer see one. */
+  1202	int observer_slot_converged(const ObserverSlot *s) {
+  1203	    if (obs_route_num(s)) return obs_num_converged(s);
+  1204	    if (!s) return 0;
+  1205	    size_t N = (size_t)observer_slot_window(s);
+  1206	    if (obs_dh_count(s) < N) return 0;
+  1207	    for (size_t i = 0; i < N; i++)
+  1208	        if (fabs(observer_slot_window_get(s, i)) >= g_obs_dh_zero) return 0;
+  1209	    return (s->entropy < g_obs_h_low) ? 1 : 0;
+  1210	}
+  1211	
+  1212	int observer_slot_equilibrium(const ObserverSlot *s) {
+  1213	    if (obs_route_num(s)) return obs_num_equilibrium(s);
+  1214	    if (!s) return 0;
+  1215	    size_t N = (size_t)observer_slot_window(s);

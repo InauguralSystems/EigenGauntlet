@@ -1,0 +1,5 @@
+$ sha256sum prereg/50/halting-uniform.txt prereg/50/halting-ge-1000.txt prereg/50/loop1-nonhalt.txt prereg/50/ngram-cps-nonhalt.txt
+57b2acd83851daa62ea656a56381427651c33538cef8dbc9c1002333a383f8af  prereg/50/halting-uniform.txt
+a245827bfc56f3292b206e34031dcc952dd0c38d1730e25ade0c158ebca5b13e  prereg/50/halting-ge-1000.txt
+c23b9a16b11d7296beff2f74fbb4b4556e788e1b136798603a881bd10c2da290  prereg/50/loop1-nonhalt.txt
+c18712d19540705e9ec7fd1f5b8e59dd0e83182d60cc340865f445f86a7e965f  prereg/50/ngram-cps-nonhalt.txt

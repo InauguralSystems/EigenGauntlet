@@ -1,0 +1,51 @@
+$ time python prereg/50/sample.py /tmp/eg50/BB5.csv.zst --out prereg/50
+{
+  "disjoint_long_eligible_count": 503,
+  "draw_indices_sha256": {
+    "halting_ge_1000": "84af8be384f552c1e23c154f76fb08baa9dd5e298190d281b98e1071892d8ac9",
+    "halting_uniform": "b8efe9b672705be82a3c5196432c1baa46abc14c747ba4b879946200365d5176",
+    "loop1_nonhalt": "dc44e075fab03754b5bd4b1cc7569cca69a5908cf9f16e3355f8871548f4a69c",
+    "ngram_cps_nonhalt": "86c1c3676e2c4ff1c06e4fef247a05cd3a7781efc5e626b62cf31d18fc3cadb6"
+  },
+  "halting_ge_1000_time_distribution": {
+    "max": 47176870.0,
+    "median": 3187.0,
+    "min": 1000.0,
+    "p25": 1600.0,
+    "p75": 5698.5,
+    "p90": 21034.4,
+    "p99": 11814995.28
+  },
+  "halting_uniform_time_distribution": {
+    "max": 113.0,
+    "median": 15.0,
+    "min": 7.0,
+    "p25": 13.0,
+    "p75": 19.0,
+    "p90": 24.0,
+    "p99": 45.01000000000022
+  },
+  "id_file_sha256": {
+    "halting-ge-1000.txt": "a245827bfc56f3292b206e34031dcc952dd0c38d1730e25ade0c158ebca5b13e",
+    "halting-uniform.txt": "57b2acd83851daa62ea656a56381427651c33538cef8dbc9c1002333a383f8af",
+    "loop1-nonhalt.txt": "c23b9a16b11d7296beff2f74fbb4b4556e788e1b136798603a881bd10c2da290",
+    "ngram-cps-nonhalt.txt": "c18712d19540705e9ec7fd1f5b8e59dd0e83182d60cc340865f445f86a7e965f"
+  },
+  "pass_1_eligible_counts": {
+    "halting": 48379894,
+    "halting_steps_ge_1000": 503,
+    "loop1_nonhalting": 126994097,
+    "ngram_cps_nonhalting": 6003729
+  },
+  "selected_counts": {
+    "halting-ge-1000.txt": 503,
+    "halting-uniform.txt": 5000,
+    "loop1-nonhalt.txt": 10000,
+    "ngram-cps-nonhalt.txt": 1000
+  },
+  "source_sha256": "2be2101b18b80a458bf85814ee361aa4f4e8d0d45a719cccda9756a65cd0685a"
+}
+
+real	6m51.510s
+user	6m23.198s
+sys	1m19.448s

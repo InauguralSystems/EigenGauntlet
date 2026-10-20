@@ -1,0 +1,13 @@
+[
+{"name":"short-cycle-1","kind":"short-period cycler","machine":"0RB0RB_0LA0LA_---0LA_---0LA_---0LA"},
+{"name":"short-cycle-2","kind":"short-period cycler","machine":"1RB1RB_1LA1LA_---0LA_---0LA_---0LA"},
+{"name":"short-cycle-3","kind":"short-period cycler","machine":"0RB1RB_0LA1LA_---0LA_---0LA_---0LA"},
+{"name":"translated-1","kind":"translated cycler","machine":"0RA0RA_---0LA_---0LA_---0LA_---0LA"},
+{"name":"translated-2","kind":"translated cycler","machine":"1RA1RA_---0LA_---0LA_---0LA_---0LA"},
+{"name":"translated-3","kind":"translated cycler","machine":"0RB0RB_0RB0RB_---0LA_---0LA_---0LA"},
+{"name":"sweeping-halter-1","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_0LZ0LA"},
+{"name":"sweeping-halter-2","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_1LZ0LA"},
+{"name":"sweeping-halter-3","kind":"halter sweeping >=1000 steps","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_0RZ0LA"},
+{"name":"champion-prefix","kind":"champion first 1000000","machine":"1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA"},
+{"name":"antihydra-prefix","kind":"Antihydra first 1000000","machine":"1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA"}
+]

@@ -1,0 +1,5 @@
+$ python evidence/bar-rewrite-50-fix/pilot.py evidence/bar-rewrite-50-fix/pilot-machines.json > evidence/bar-rewrite-50-fix/pilot-table.json
+
+real	1m9.995s
+user	1m7.417s
+sys	0m1.026s

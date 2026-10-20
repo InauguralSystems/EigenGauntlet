@@ -1,0 +1,3 @@
+$ stat -c "%s %n" /tmp/eg50/BB5.csv.zst && sha256sum /tmp/eg50/BB5.csv.zst
+804978618 /tmp/eg50/BB5.csv.zst
+2be2101b18b80a458bf85814ee361aa4f4e8d0d45a719cccda9756a65cd0685a  /tmp/eg50/BB5.csv.zst
