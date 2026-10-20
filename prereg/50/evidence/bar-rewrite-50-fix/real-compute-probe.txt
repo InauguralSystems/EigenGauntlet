@@ -1,0 +1,11 @@
+$ python evidence/bar-rewrite-50-fix/compute_probe.py
+machine=1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA
+transitions=1000000 signature_updates=1000000 observer_assignments=2000000
+base=1815673109382999696 modulus=2305843009213693951 final_hash=2086302836489811322 final_head_offset=523 final_entropy=3.375
+elapsed_seconds=7.550376094 transitions_per_second=132443.734
+champion_seconds=356.203111
+antihydra_seconds=755.037609
+one_sample_machine_seconds=7.927895
+all_21000_samples_seconds=166485.792873
+plain_elapsed_seconds=0.706611883 plain_transitions_per_second=1415204.052
+champion_plain_seconds=33.335737

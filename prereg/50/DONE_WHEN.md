@@ -6,7 +6,7 @@
 
 A future harness may run only these graded items. It writes canonical JSON under `results/50/`; no simulator, decider, or graded result is included here.
 
-1. **Champion and replay.** Run total machine `1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA` on a blank tape with the **plain simulator: no signature and no observer**. Both VM (`EIGS_JIT_OFF=1`) and default JIT must execute exactly 47,176,870 transitions, finish with 4,098 ones, and produce byte-identical trace/replay output and tape SHA-256. Each arm must also set `EIGS_JIT_STATS=1`: the VM arm must report `compiled=0`, and the JIT arm must report `compiled>0`. v0.46.0 reads the switch at `src/jit.c:4487-4495` and prints those counters at `src/jit.c:310-314`; the verbatim source and demonstrated 0/1 tier output are in `evidence/bar-rewrite-50-fix/`.
+1. **Champion and replay.** Run total machine `1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA` on a blank tape with the **plain simulator: no signature and no observer**. Both VM (`EIGS_JIT_OFF=1`) and default JIT must execute exactly 47,176,870 transitions, finish with 4,098 ones, and produce byte-identical trace/replay output and tape SHA-256. Each arm must also set `EIGS_JIT_STATS=1`: the VM arm must report `compiled=0`, and the JIT arm must report `compiled>0`. v0.46.0 reads the switch at `src/jit.c:4487-4495` and prints those counters at `src/jit.c:310-314`; the verbatim source and demonstrated 0/1 tier output are in `prereg/50/evidence/bar-rewrite-50-fix/`.
 2. **Antihydra abstention.** Machine `1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA`, blank tape, must receive no claim of any class through 100,000,000 transitions. Report every observer predicate on both signature bindings, without grading those states.
 3. **Mechanism pilot table.** Preserve the already-run checkpoint table and the rejection decision byte-for-byte. This is evidence, not a rerunnable graded sample.
 
@@ -35,7 +35,7 @@ The original mapping was `cycler` iff `converged(signature_hash) OR stable(signa
 
 ### Pre-named pilot and decision rule
 
-Before it ran, the pilot named 11 entries in `evidence/bar-rewrite-50-fix/pilot-classes.txt`: three explicit period-2 cyclers, three explicit one-cell translated cyclers, three totalized terminal variants sharing the champion's >1,000-step sweeping prefix, the champion's first 1,000,000 transitions, and Antihydra's first 1,000,000. The constructed machines are absent from all frozen IDs. Classes come from direct transition-table proofs, the Coq-BB5 champion record, and the cited bbchallenge Antihydra page as detailed there.
+Before it ran, the pilot named 11 entries in `prereg/50/evidence/bar-rewrite-50-fix/pilot-classes.txt`: three explicit period-2 cyclers, three explicit one-cell translated cyclers, three totalized terminal variants sharing the champion's >1,000-step sweeping prefix, the champion's first 1,000,000 transitions, and Antihydra's first 1,000,000. The constructed machines are absent from all frozen IDs. Classes come from direct transition-table proofs, the Coq-BB5 champion record, and the cited bbchallenge Antihydra page as detailed there.
 
 At 10^3, 10^4, 10^5, and 10^6 the pilot recorded all six predicates (`converged`, `stable`, `improving`, `oscillating`, `diverging`, `equilibrium`) on both bindings. It failed separation: every sweeping halter already had `stable(signature_hash)=true` at 10^3, while translated-2 had no mapped predicate at any checkpoint. No better observer-only mapping is proposed. Therefore the mapping is rejected and no sample workload may run.
 

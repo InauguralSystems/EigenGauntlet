@@ -1,0 +1,6 @@
+$ EIGS_JIT_OFF=1 EIGS_JIT_STATS=1 eigenscript tier.eigs
+499999500000
+[jit] scanned=0 compiled=0 cache_used=0 cache_full_rejects=0
+$ env -u EIGS_JIT_OFF EIGS_JIT_STATS=1 eigenscript tier.eigs
+499999500000
+[jit] scanned=1 compiled=1 cache_used=7160 cache_full_rejects=0

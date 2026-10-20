@@ -169,7 +169,7 @@
       "champion_prefix": 1,
       "antihydra_prefix": 1
     },
-    "table": "evidence/bar-rewrite-50-fix/pilot-table.json",
+    "table": "prereg/50/evidence/bar-rewrite-50-fix/pilot-table.json",
     "decision": "REJECT_MAPPING_NO_REPLACEMENT",
     "finding": "needing explicit cycle detection is the finding",
     "graded_scope": [
@@ -181,7 +181,7 @@
   "compute": {
     "probe_transitions": 1000000,
     "work": "champion transitions + polynomial signature + string entropy assignment + numeric observer assignment",
-    "evidence": "evidence/bar-rewrite-50-fix/real-compute-probe.txt",
+    "evidence": "prereg/50/evidence/bar-rewrite-50-fix/real-compute-probe.txt",
     "champion_mode": "plain simulator, no signature, no observer",
     "rates": "see verbatim evidence"
   }
