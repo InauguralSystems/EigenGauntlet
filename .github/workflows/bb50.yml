@@ -33,7 +33,7 @@ jobs:
           find /tmp/bb50 -maxdepth 1 -type f ! -name '*.tape' -print -exec cat {} \; 2>&1 | tee results/50/complete-logs.txt
       - name: Upload results and complete logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: issue-50-frozen-results
           path: |
