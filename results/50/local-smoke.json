@@ -1,0 +1,37 @@
+{
+  "antihydra": {
+    "claim": null,
+    "machine": "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA",
+    "predicates_ungraded": {
+      "head_offset": {
+        "converged": false,
+        "diverging": true,
+        "equilibrium": false,
+        "improving": false,
+        "oscillating": false,
+        "stable": false
+      },
+      "signature_hash": {
+        "converged": false,
+        "diverging": false,
+        "equilibrium": true,
+        "improving": false,
+        "oscillating": false,
+        "stable": true
+      }
+    },
+    "transitions": 1000000
+  },
+  "champion": {
+    "final_tape_sha256": "2ef0e5dca6b00adf3cf1dc75e0d40a6408ac9799c778ac71961484a292f436df",
+    "jit_compiled": 2,
+    "machine": "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA",
+    "ones": 4098,
+    "transitions": 47176870,
+    "vm_compiled": 0,
+    "vm_jit_output_byte_identical": true
+  },
+  "eigenscript": "0.46.0",
+  "scope": "reduced-local-smoke",
+  "schema": "eigengauntlet.issue-50.smoke.v1"
+}
