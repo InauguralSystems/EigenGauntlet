@@ -2,11 +2,20 @@ name: Issue 50 frozen graded lanes
 
 on:
   push:
+    # Only the PR branch: a bare `push:` would re-run this 340-minute job on every push to main after merge.
+    branches: [cloud-50]
+
+permissions:
+  contents: read
 
 jobs:
   frozen-scope:
     runs-on: ubuntu-latest
     timeout-minutes: 340
+    defaults:
+      run:
+        # bash -eo pipefail: without it, `run.sh | tee` reports tee's exit status and a failed lane shows green.
+        shell: bash
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Build the pre-registered EigenScript release
