@@ -32,7 +32,8 @@ define dataflow_run(size) as:
     assert_true of ["read json", len of loaded > 10]
 
     store_path is "tmp/dataflow.db"
-    rm of store_path
+    if file_exists of store_path:
+        remove_file of store_path
     db is store_open of store_path
     for rec in records:
         store_put of [db, "records", rec]
@@ -40,7 +41,9 @@ define dataflow_run(size) as:
     assert_eq of ["store count", stored_count, count]
     store_close of db
 
-    rm of path
-    rm of store_path
+    if file_exists of path:
+        remove_file of path
+    if file_exists of store_path:
+        remove_file of store_path
     return f"records={count}"
 

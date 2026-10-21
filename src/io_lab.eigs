@@ -17,7 +17,8 @@ define io_lab_run(size) as:
     loaded_stream is tensor_load of stream_path
     assert_eq of ["stream tensor length", len of loaded_stream, count]
     assert_eq of ["stream tensor first", loaded_stream[0], 0.5]
-    rm of stream_path
+    if file_exists of stream_path:
+        remove_file of stream_path
 
     # Tensor save/load round trip.
     tensor_path is mktemp of null
@@ -26,7 +27,8 @@ define io_lab_run(size) as:
     t2 is tensor_load of tensor_path
     assert_eq of ["tensor load rows", len of t2, 2]
     assert_eq of ["tensor load value", t2[1][1], 5.0]
-    rm of tensor_path
+    if file_exists of tensor_path:
+        remove_file of tensor_path
 
     # Buffer operations and binary read.
     buf is buffer of 8
@@ -40,7 +42,8 @@ define io_lab_run(size) as:
     bytes is read_bytes_buf of text_path
     assert_true of ["read bytes buffer", buf_len of bytes >= 12]
     assert_eq of ["first byte E", buf_get of [bytes, 0], 69]
-    rm of text_path
+    if file_exists of text_path:
+        remove_file of text_path
 
     return f"stream_values={count}"
 
