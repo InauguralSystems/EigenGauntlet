@@ -1,0 +1,3 @@
+DECISION: ORIGINAL MAPPING REJECTED BY THE PRE-REGISTERED PILOT.
+The original mapping fails separation. At 1,000 transitions all three sweeping halters have stable(signature_hash)=true, hence false cycler claims. translated-2 has no mapped predicate true at any checkpoint, hence is missed. The table also demonstrates that constant/all-zero hashes can converge for reasons unrelated to configuration equality.
+Needing explicit cycle detection is the finding. No replacement observer-only mapping is proposed or frozen. Consequently the 22,050,000,000-transition sample runs will not be run. The graded scope is reduced to champion, Antihydra abstention, and this pilot table, exactly as the fix-round instruction requires.

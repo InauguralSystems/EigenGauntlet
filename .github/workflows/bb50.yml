@@ -1,0 +1,44 @@
+name: Issue 50 frozen graded lanes
+
+on:
+  push:
+    # Only the PR branch: a bare `push:` would re-run this 340-minute job on every push to main after merge.
+    branches: [cloud-50]
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    defaults:
+      run:
+        # bash -eo pipefail: without it, `run.sh | tee` reports tee's exit status and a failed lane shows green.
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build the pre-registered EigenScript release
+        run: |
+          git clone --branch v0.46.0 --depth 1 https://github.com/InauguralSystems/EigenScript.git /tmp/eigenscript
+          make -C /tmp/eigenscript build
+      - name: Run only the frozen graded lanes
+        env:
+          EIGENSCRIPT_BIN: /tmp/eigenscript/src/eigenscript
+          BB50_OUT: /tmp/bb50
+        run: evidence/50/run.sh 2>&1 | tee results/50/workflow.log
+      - name: Show complete textual logs
+        if: always()
+        run: |
+          find /tmp/bb50 -maxdepth 1 -type f ! -name '*.tape' -print -exec cat {} \; 2>&1 | tee results/50/complete-logs.txt
+      - name: Upload results and complete logs
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: issue-50-frozen-results
+          path: |
+            results/50/
+            /tmp/bb50/*.stdout
+            /tmp/bb50/*.stderr
+            /tmp/bb50/*.sha256
+            /tmp/bb50/version.log
