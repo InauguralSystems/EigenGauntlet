@@ -411,7 +411,8 @@ define _cross_tape_tasks_containers(size) as:
     rec is exec_capture of [["env", f"EIGS_TRACE={tape}", exe, child, n], 60]
     rep is exec_capture of [["env", f"EIGS_REPLAY={tape}", exe, child, n], 60]
     lines is split of [read_text of tape, "\n"]
-    rm of tape
+    if file_exists of tape:
+        remove_file of tape
     assert_eq of ["cross: tape child recorded", rec[0], 0]
     assert_eq of ["cross: tape child replayed", rep[0], 0]
     assert_true of ["cross: the recorded run printed its merge", (index_of of [rec[1], "merged="]) >= 0]
