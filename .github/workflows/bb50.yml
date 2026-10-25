@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - name: Build the pre-registered EigenScript release
         run: |
-          git clone --branch v0.46.0 --depth 1 https://github.com/InauguralSystems/EigenScript.git /tmp/eigenscript
+          git clone --branch v0.47.0 --depth 1 https://github.com/InauguralSystems/EigenScript.git /tmp/eigenscript
           make -C /tmp/eigenscript build
       - name: Run only the frozen graded lanes
         env:
