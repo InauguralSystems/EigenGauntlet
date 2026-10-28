@@ -24,7 +24,7 @@ define observer_lab_run(size) as:
     x is 100
     x is 10
     x is 2
-    x_pred is improving
+    x_pred is improving of x
     x_report is report of x
     assert_eq of ["observer improving report", x_report, "improving"]
     assert_true of ["observer improving predicate", x_pred]
@@ -43,7 +43,7 @@ define observer_lab_run(size) as:
     y is 5.0
     y is 100.0
     y is 1000000
-    y_pred is diverging
+    y_pred is diverging of y
     y_report is report of y
     assert_eq of ["observer diverging report", y_report, "diverging"]
     assert_true of ["observer diverging predicate", y_pred]
@@ -60,7 +60,7 @@ define observer_lab_run(size) as:
     z is 1000000
     z is 1000000
     z is 1000000
-    z_pred is converged
+    z_pred is converged of z
     z_report is report of z
     assert_eq of ["observer converged report", z_report, "converged"]
     assert_true of ["observer converged predicate", z_pred]
@@ -77,7 +77,7 @@ define observer_lab_run(size) as:
     v is 42
     v is 42
     v is 42
-    v_pred is equilibrium
+    v_pred is equilibrium of v
     v_report is report of v
     # The quiescent lattice is nested: converged implies equilibrium AND stable,
     # and `report` names the STRONGEST band that holds. A constant therefore
@@ -94,7 +94,7 @@ define observer_lab_run(size) as:
     w is 1000000
     w is 0.5
     w is 1000000
-    w_pred is oscillating
+    w_pred is oscillating of w
     w_report is report of w
     assert_eq of ["observer oscillating report", w_report, "oscillating"]
     assert_true of ["observer oscillating predicate", w_pred]

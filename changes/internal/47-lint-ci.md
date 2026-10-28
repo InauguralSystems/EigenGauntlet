@@ -1,0 +1,1 @@
+- Lint all EigenScript sources in CI and refresh resolved upstream-gap documentation (#47).
