@@ -21,5 +21,10 @@ jobs:
       - name: Run smoke suite
         run: tests/run_smoke.sh
 
+      - name: Lint EigenScript sources (warnings are errors; W021 hints are advisory)
+        run: |
+          git ls-files -z 'gauntlet.eigs' 'src/*.eigs' 'lib/*.eigs' 'fixtures/*.eigs' |
+            xargs -0 -n 1 eigenscript --lint
+
       - name: Run the tape crossing (two child interpreters, own suite)
         run: eigenscript gauntlet.eigs --suite cross-tape

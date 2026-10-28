@@ -21,7 +21,10 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
   bug is still there, and is dead code once it is not: delete the
   `known_gap` call then.
 
-- 2026-07-17 — **EigenScript#642 (BLOCKER)**: a comprehension whose loop var
+## Resolved upstream — verified
+
+- 2026-07-17 → **FIXED (verified on EigenScript v0.47.0)** —
+  **EigenScript#642**: a comprehension whose loop var
   shadows a local computes garbage. Inside a function, `i is 0 - 1` then
   `[i * 2 for i in [1, 2, 3]]` yields `[-2, -2, -2]` — the body reads the outer
   slot every iteration instead of its own loop var. rc=0, no diagnostic.
@@ -32,17 +35,18 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
   slot-promoted, so two live bindings exist and the body reads the wrong one.
   Found by `cross_lab`'s `lib/sync` x comprehension crossing on its first run
   (the lock was incidental — isolating it produced the controls above).
-  `cross_lab` parks the affected assertion rather than pinning the buggy value.
+  `cross_lab`'s body-result assertion passes on the pinned binary.
 
-- 2026-07-17 — **EigenScript#633 (BLOCKER)**: the read AFTER such a
+- 2026-07-17 → **FIXED (verified on EigenScript v0.47.0)** —
+  **EigenScript#633**: the read AFTER such a
   comprehension is stale. Same root-cause family as #642, different symptom and
   trigger: `print of i` returns the pre-comprehension slot value while
   `eval of "i"` returns the leaked env value. Adding a never-called lambda
   mentioning the name flips which binding the read sees, so program text after a
   statement changes that statement's result. `cross_lab` re-derived this
-  independently and parks its leak assertion until the fix lands.
-
-## Resolved upstream — verified
+  independently. The old leak assertion is intentionally not restored: issue
+  #56 tracks EigenScript #1737 making comprehension binders lexical at the next
+  pin.
 
 - 2026-06-29 → **FIXED (verified 2026-07-03)**: the minimal repro passes
   against EigenScript main (`total=42 id=7`, keys intact) — fixed upstream

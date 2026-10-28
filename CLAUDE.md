@@ -135,12 +135,9 @@ the run then exits nonzero listing every failure. The waiver keys only on
 `--version`: a main build that reports the pinned version but has lost the
 upstream fix passes silently until the pin moves.
 
-**Why this repo and not upstream's suite:** EigenScript CI is ~33 min of
-COMPUTE per PR across 17 legs — ~10 min wall, since the legs run in
-parallel behind one 8m36s ASan leg. Coverage added upstream is paid on
-every PR forever and lands behind that gate; the same coverage here
-costs ~40 s of CI wall (39 s on 2026-10-12, most of it building
-EigenScript) in a repo that only runs on its own changes and pin bumps.
+**Why this repo and not upstream's suite:** Coverage added upstream is paid on
+every EigenScript PR forever and lands behind that project's full CI gate;
+the same coverage here runs only on this repo's own changes and pin bumps.
 
 But note what this repo can and cannot be: the Gauntlet is pinned to a
 RELEASED tag, so it is **post-release coverage, not a pre-merge gate**.

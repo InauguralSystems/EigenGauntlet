@@ -64,24 +64,19 @@ define _cross_task_self_and_detach(size) as:
     assert_eq of ["cross: main task id is 0", task_self of null, 0]
 
 define _cross_sync_lock_across_comprehension(_size) as:
-    # lib/sync x comprehension-var leak: the lock is held ACROSS a comprehension
-    # whose variable leaks to the surrounding scope (intended semantics). The
-    # leak must not disturb the lock, and the lock must not suppress the leak.
+    # lib/sync x comprehension: the lock is held ACROSS a comprehension. We
+    # assert that its body sees its binder and that the lock remains usable.
     #
     # This crossing found TWO upstream bugs on its first run, both recorded in
-    # GAPS.md and neither worked around here:
+    # GAPS.md and since fixed upstream:
     #   * EigenScript#642 (BLOCKER) — a comprehension whose loop var shadows a
     #     local computes garbage: [i*2 for i in [1,2,3]] yields [-2,-2,-2].
     #   * EigenScript#633 (BLOCKER) — the read AFTER such a comprehension is
     #     stale (slot) while eval sees the leaked value (env).
-    # Isolated with one-variable-changed reruns: no lock and no closure give the
-    # same divergence, module scope is correct, and a differently-named outer
-    # local is correct — so the LOCK is incidental to both. The lock half is
-    # what this lab can still assert honestly; the comprehension halves are
-    # parked until #642/#633 land rather than pinned to the buggy values.
-    # Re-add on the pin bump that carries the fixes:
-    #     assert_eq of ["...body saw the loop var", ys[2], 6]
-    #     assert_eq of ["...var still leaks under a lock", leaked, 3]
+    # Isolated with one-variable-changed reruns: the lock was incidental. The
+    # body result below now guards #642/#633. We deliberately do not assert a
+    # leaked binder: issue #56 tracks EigenScript #1737, which makes
+    # comprehension binders lexical at the next pin.
     lk is lock_new of null
     lock_acquire of lk
     ys is [v * 2 for v in [1, 2, 3]]
