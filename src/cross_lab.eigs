@@ -253,7 +253,7 @@ define _singleton_burst(n, cells, d) as:
     local t is "unset"
     local i is 0
     loop while i < n:
-        if (type of nul) == "none":
+        if nul == null:
             nones is nones + 1
         if (str of yes) == "true":
             trues is trues + 1
