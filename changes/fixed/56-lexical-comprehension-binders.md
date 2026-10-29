@@ -1,0 +1,1 @@
+- The cross-language workload now expects comprehension binders to remain lexical, including when evaluation raises (#56).

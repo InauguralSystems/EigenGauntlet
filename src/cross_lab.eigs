@@ -351,7 +351,7 @@ define _cross_bools_containers_json(size) as:
     # values and list elements must survive json_encode/json_decode as BOOLS
     # (not 1/0), and comparing one with a number must raise the catchable
     # type_mismatch -- including from inside a comprehension filter, where the
-    # comprehension var then leaks holding the element that raised.
+    # comprehension binder remains lexical even when its filter raises.
     yes is 1 == 1
     no is 1 == 2
     xs is []
@@ -384,13 +384,23 @@ define _cross_bools_containers_json(size) as:
         kind2 is e.kind
     assert_eq of ["cross: num != bool raises", kind2, "type_mismatch"]
     kind3 is "none"
+    bv is "outer binding"
     try:
         ys is [bv for bv in back.xs if bv == yes]
     catch e:
         kind3 is e.kind
     assert_eq of ["cross: bool == num raises inside a comprehension filter", kind3, "type_mismatch"]
-    # descriptive: the filter got through yes, no, then raised on the 1
-    assert_eq of ["cross: comprehension var leaks the element that raised", bv, 1]
+    assert_eq of ["cross: a raising comprehension leaves its outer binding unchanged", bv, "outer binding"]
+    try:
+        zs is [fresh_comprehension_binder for fresh_comprehension_binder in back.xs if fresh_comprehension_binder == yes]
+    catch fresh_error:
+        kind3 is fresh_error.kind
+    fresh_undefined is false
+    try:
+        eval of "fresh_comprehension_binder"
+    catch fresh_error:
+        fresh_undefined is fresh_error.kind == "undefined_name"
+    assert_eq of ["cross: a fresh comprehension binder is undefined after its scope", fresh_undefined, true]
     return len of back.xs
 
 define _cross_tape_tasks_containers(size) as:
