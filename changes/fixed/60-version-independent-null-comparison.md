@@ -1,0 +1,1 @@
+- Compare null values directly so singleton checks work across EigenScript releases (#60).
