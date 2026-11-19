@@ -11,7 +11,7 @@ if (len of argv) > 0:
 
 # Residues are three little-endian base-2^21 limbs.  Every intermediate below
 # stays under 2^53, so this implements the frozen mod-(2^61-1) arithmetic
-# exactly despite EigenScript's deliberately-f64 numeric model.
+# exactly, whether the runtime's numbers are doubles or exact 64-bit integers.
 Q is 2097152
 TOP is 524288
 B_LIMBS is [44688, 562632, 412836]

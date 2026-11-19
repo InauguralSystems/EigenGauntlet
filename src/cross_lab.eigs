@@ -303,7 +303,7 @@ define _cross_numbers_in_slots_tasks_comprehension(size) as:
     # edges: -0, a non-representable sum, 2^53+1, float overflow, the
     # smallest subnormal. Each task gets a deep COPY, mutates numbers in its
     # copy's slots, and returns them by join AND by mailbox.
-    edge is [0.0 - 0.0, 0.1 + 0.2, 9007199254740993, 1e308, 0 - 1e308, 5e-324, 2.5, 0 - 7]
+    edge is [-0.0, 0.1 + 0.2, 9007199254740993, 1e308, 0 - 1e308, 5e-324, 2.5, 0 - 7]
     vals is []
     k is 0
     loop while k < size:
@@ -333,6 +333,9 @@ define _cross_numbers_in_slots_tasks_comprehension(size) as:
     assert_eq of ["cross: infinity survives the slot round trip", doubled[0][3], 1e400]
     assert_eq of ["cross: exact 2^53+1 survives the slot round trip", shared.vals[2], 9007199254740993]
     assert_eq of ["cross: 0.1+0.2 is not 0.3 in a slot", shared.vals[1] == 0.3, false]
+    # -0 compares equal to 0, so its sign is read from the bits.
+    assert_eq of ["cross: negative zero keeps its sign in a slot", f64_bits of shared.vals[0], f64_bits of (-0.0)]
+    assert_eq of ["cross: negative zero keeps its sign through a task", f64_bits of doubled[0][0], f64_bits of (-0.0)]
     # dict iteration: keys in insertion order, values read back by key
     ks is keys of msgs[0]
     assert_eq of ["cross: a mailbox dict keeps its key order", ks, ["vals", "count", "first"]]

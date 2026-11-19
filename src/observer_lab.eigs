@@ -10,15 +10,14 @@ define observer_lab_run(size) as:
     # "stable", so each case below feeds a real window.
     #
     # Since #861/#864 (EigenScript PR #892) a NUMERIC binding is classified from
-    # the VALUE channel — relative steps Dv/(1+|v|) — not from entropy. These
+    # the VALUE channel (its relative steps), not from entropy. These
     # cases are therefore named for what the VALUE does. The entropy classifier
     # is still live (non-numeric bindings) and is exercised explicitly below via
     # `classify of [t, "entropy"]`, so re-routing did not drop it from the
     # gauntlet's coverage.
 
     # Improving: a contracting descent. Steps -999000, -900, -90, -8 are
-    # monotone and each shrinks well under 0.7x the older half — a summable
-    # tail, i.e. genuinely closing on a limit.
+    # monotone and shrinking: a descent that keeps reaching a new lowest value.
     x is 1000000
     x is 1000
     x is 100

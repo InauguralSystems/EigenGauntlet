@@ -72,7 +72,9 @@ missing primitive or runtime bug, record it here and fix EigenScript at the root
   that block, so the routed verdict may change. The observer lab now checks
   the entropy gradient (`why is hot`) directly, keeps the assignment-count
   check, verifies the computed sum, and runs an observed control that must
-  change its entropy gradient. The smoke command passes against v0.43.0 and
+  change its entropy gradient. On a runtime with the next number model a numeric
+  binding has no entropy history, and the lab reads the gradient from a
+  non-numeric probe beside `hot` (`why is entropy_probe`). The smoke command passes against v0.43.0 and
   candidate `bb33420`; removing the block fails the entropy assertion on both.
 
 - 2026-05-30: `swarm` lab spent ~5 minutes at size 64 because the
