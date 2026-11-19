@@ -29,10 +29,16 @@ define observer_lab_run(size) as:
     assert_eq of ["observer improving report", x_report, "improving"]
     assert_true of ["observer improving predicate", x_pred]
 
-    # The SAME trajectory on the entropy channel still reads "diverging" (H
-    # rises as |x| descends toward 1). This is the pre-#892 answer, kept under
-    # test by naming the channel instead of relying on the default route.
-    x_traj is trajectory of x
+    # The SAME sequence, wrapped in singleton lists so it is a supported
+    # non-numeric entropy trajectory, still reads "diverging" (H rises as the
+    # contained magnitude descends toward 1). This is the pre-#892 answer, kept
+    # under test by naming the channel instead of relying on the default route.
+    x_entropy_values is [1000000]
+    x_entropy_values is [1000]
+    x_entropy_values is [100]
+    x_entropy_values is [10]
+    x_entropy_values is [2]
+    x_traj is trajectory of x_entropy_values
     x_entropy is classify of [x_traj, "entropy"]
     assert_eq of ["observer entropy channel", x_entropy, "diverging"]
 
@@ -108,32 +114,37 @@ define observer_lab_run(size) as:
 
     hot is 1
     age_before is when is hot
-    gradient_before is why is hot
+    entropy_probe is [hot]
+    gradient_before is why is entropy_probe
     iterations is 20 * size
     unobserved:
         for i in range of iterations:
             hot is hot + i
+            entropy_probe is [hot]
     age_after is when is hot
-    gradient_after is why is hot
+    gradient_after is why is entropy_probe
     # `unobserved:` suppresses OBSERVATION (entropy/dH), not assignment, so the
     # assignment counter must still advance (EigenScript #908 — the old
     # "unchanged" assertion encoded the bug: `when is x` skipped these while the
     # history's own ordinal counter (#868) counted them, and any ordinal
     # computed from `when is x` came out short by exactly this many).
     assert_eq of ["unobserved assignments are counted", age_after, age_before + iterations]
-    # The entropy gradient is suppressed. Numeric `report of` instead reads
-    # the value window, which includes these assignments after EigenScript
-    # #1049; freezing that verdict was the stale assertion caught by #1212.
+    # The non-numeric probe's entropy gradient is suppressed. Numeric `hot`
+    # still records its value window, including these assignments after
+    # EigenScript #1049; the separate probe keeps this assertion on the entropy
+    # channel that it is intended to test.
     assert_eq of ["unobserved suppresses entropy updates", gradient_after, gradient_before]
     assert_eq of ["unobserved computes the sum", hot, 1 + iterations * (iterations - 1) / 2]
 
     # Control: the same assignments outside the block must change the entropy
     # gradient, so the suppression check cannot pass over an inactive observer.
     observed_hot is 1
-    observed_gradient_before is why is observed_hot
+    observed_probe is [observed_hot]
+    observed_gradient_before is why is observed_probe
     for i in range of iterations:
         observed_hot is observed_hot + i
-    observed_gradient_after is why is observed_hot
+        observed_probe is [observed_hot]
+    observed_gradient_after is why is observed_probe
     assert_true of ["observed assignments update entropy", observed_gradient_after != observed_gradient_before]
 
     thresholds is get_observer_thresholds of null

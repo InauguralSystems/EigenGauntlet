@@ -300,7 +300,7 @@ define _cross_singletons_in_hot_observed_loop(size) as:
 define _cross_numbers_in_slots_tasks_comprehension(size) as:
     # numbers in list/dict slots (NaN-boxed storage, new in v0.46.0) x tasks x
     # comprehension x dict iteration. Values chosen to sit near the encoding's
-    # edges: -0, a non-representable sum, 2^53+1, the saturation bounds, the
+    # edges: -0, a non-representable sum, 2^53+1, float overflow, the
     # smallest subnormal. Each task gets a deep COPY, mutates numbers in its
     # copy's slots, and returns them by join AND by mailbox.
     edge is [0.0 - 0.0, 0.1 + 0.2, 9007199254740993, 1e308, 0 - 1e308, 5e-324, 2.5, 0 - 7]
@@ -330,8 +330,8 @@ define _cross_numbers_in_slots_tasks_comprehension(size) as:
     # the comprehension inside the task saw the slot values exactly
     expect is [v * 2 for v in vals]
     assert_eq of ["cross: doubled through a task equals doubled on main", doubled[2], expect]
-    assert_eq of ["cross: saturation survives the slot round trip", doubled[0][3], 1e308]
-    assert_eq of ["cross: 2^53+1 is stored as 2^53", shared.vals[2], 9007199254740992]
+    assert_eq of ["cross: infinity survives the slot round trip", doubled[0][3], 1e400]
+    assert_eq of ["cross: exact 2^53+1 survives the slot round trip", shared.vals[2], 9007199254740993]
     assert_eq of ["cross: 0.1+0.2 is not 0.3 in a slot", shared.vals[1] == 0.3, false]
     # dict iteration: keys in insertion order, values read back by key
     ks is keys of msgs[0]
